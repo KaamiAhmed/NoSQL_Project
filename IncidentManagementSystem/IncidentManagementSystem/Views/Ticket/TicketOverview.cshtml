@@ -1,0 +1,7 @@
+﻿@{
+    ViewData["Title"] = "Tickets Overview";
+    User? loggedInUser = (User?)ViewData["LoggedInUser"];
+}
+
+<h1>Tickets Overview/Dashboard</h1>
+<p>Ticket overview/Dashboard of @loggedInUser.Name.FirstName @loggedInUser.Name.LastName will appear here</p>
