@@ -1,11 +1,13 @@
 ﻿@{
 	User? loggedInUser = (User?)ViewData["LoggedInUser"];
 }
-
-<div class="d-flex flex-column">
-	@if (loggedInUser != null){
-	<p>@loggedInUser.Name.FirstName @loggedInUser.Name.LastName</p>
-	}
-	<a href="/Ticket/TicketOverview">Dashboard</a>
-	<a href="/Ticket/GetMyTickets">My Tickets</a>
+<div style="width:20%;height:100vh;" class="text-white bg-black">
+	<div class="d-flex flex-column">
+		@if (loggedInUser != null)
+		{
+			<p>@loggedInUser.Name.FirstName @loggedInUser.Name.LastName</p>
+		}
+		<a href="/Ticket/TicketOverview">Dashboard</a>
+		<a href="/Ticket/GetMyTickets">My Tickets</a>
+	</div>
 </div>
