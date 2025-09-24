@@ -1,0 +1,35 @@
+﻿@model IncidentManagementSystem.Models.Login
+@{
+    Layout = "/Views/Shared/_LoginLayout.cshtml";
+    ViewData["Title"] = "Login";
+}
+@{
+    if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+    }
+}
+<form action="/Home/Login" method="POST">
+    <fieldset>
+        <legend><b>Login:</b></legend>
+        <div>
+            <label for="UserName">Username:</label><br />
+            <input type="text" name="UserName" id="UserName" required value="@Model?.UserName" />
+        </div>
+        <br />
+        <div>
+            <label for="Password">Password:</label><br />
+            <input type="password" name="Password" id="Password" required value="@Model?.Password" />
+        </div>
+
+        <div>
+            <label for="Role">Role:</label><br />
+            <select name="Role">
+                <option value="regular employee">Regular Employee</option>
+                <option value="service desk employee">Service Desk Employee</option>
+            </select>
+        </div>
+
+        <input type="submit" value="Login" />
+    </fieldset>
+</form>
