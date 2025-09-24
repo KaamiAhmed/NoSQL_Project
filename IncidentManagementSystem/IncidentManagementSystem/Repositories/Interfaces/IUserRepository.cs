@@ -6,7 +6,7 @@ namespace IncidentManagementSystem.Repositories.Interfaces
     {
         List<User> GetAll();
         void Add(User user);
-        User? GetUserByLogin(string userName, string password, string role);
+        User? GetUserByLogin(string userName, string password, Role role);
 
         // User? GetById(string id);
         // void Update(User user);

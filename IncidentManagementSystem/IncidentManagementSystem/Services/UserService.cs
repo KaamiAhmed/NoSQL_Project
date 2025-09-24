@@ -26,7 +26,7 @@ namespace IncidentManagementSystem.Services
             return _userRepository.GetAll();
         }
 
-        public User? GetUserByLogin(string userName, string password, string role)
+        public User? GetUserByLogin(string userName, string password, Role role)
         {
             return _userRepository.GetUserByLogin(userName, HashPassword(password), role);
         }

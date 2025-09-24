@@ -12,7 +12,7 @@ namespace IncidentManagementSystem.Repositories
             _users = db.GetCollection<User>("User");
         }
 
-        public User GetUserByLogin(string userName, string password, string role)
+        public User GetUserByLogin(string userName, string password, Role role)
         {
             return _users.Find(u => u.UserName == userName && u.Password == password && u.Role == role).FirstOrDefault();
         }

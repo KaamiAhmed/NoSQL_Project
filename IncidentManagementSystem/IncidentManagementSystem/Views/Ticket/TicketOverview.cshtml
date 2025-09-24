@@ -1,7 +1,32 @@
 ﻿@{
-    ViewData["Title"] = "Tickets Overview";
-    User? loggedInUser = (User?)ViewData["LoggedInUser"];
-}
+	ViewData["Title"] = "Tickets Overview";
+	User? loggedInUser = (User?)ViewData["LoggedInUser"];
 
-<h1>Tickets Overview/Dashboard</h1>
-<p>Ticket overview/Dashboard of @loggedInUser.Name.FirstName @loggedInUser.Name.LastName will appear here</p>
+	long totalTickets = (long)ViewData["TotalTickets"];
+	long totalOpenTickets = (long)ViewData["TotalOpenTickets"];
+	long totalResolvedTickets = (long)ViewData["TotalResolvedTickets"];
+	long totalClosedTickets = (long)ViewData["TotalClosedTickets"];
+
+	double openPercentage = (double)totalOpenTickets / (int)totalTickets * 100;
+	double resolvedPercentage = (double)totalResolvedTickets / (int)totalTickets * 100;
+	double closedPercentage = (double)totalClosedTickets / (int)totalTickets * 100;
+}
+<div class="main-container d-flex flex-row">
+	<partial name="_SideBar"></partial>
+
+	<div style="width:80%">
+		<h1>Tickets Overview</h1>
+		<p>Open tickets:@totalOpenTickets/@totalTickets</p>
+		<div class="progress" role="progressbar" style="width:50%;" aria-label="Example with label" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+			<div class="progress-bar" style="width: @openPercentage%">@Math.Round(openPercentage)%</div>
+		</div>
+		<p>Resolved tickets:@totalResolvedTickets/@totalTickets</p>
+		<div class="progress" role="progressbar" style="width:50%;" aria-label="Example with label" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+			<div class="progress-bar" style="width: @resolvedPercentage%">@Math.Round(resolvedPercentage)%</div>
+		</div>
+		<p>Closed tickets:@totalClosedTickets/@totalTickets</p>
+		<div class="progress" role="progressbar" style="width:50%;" aria-label="Example with label" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+			<div class="progress-bar" style="width: @closedPercentage%">@Math.Round(closedPercentage)%</div>
+		</div>
+	</div>
+</div>
