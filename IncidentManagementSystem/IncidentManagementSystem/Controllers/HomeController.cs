@@ -42,7 +42,7 @@ namespace IncidentManagementSystem.Controllers
             {
                 string jsonUser = JsonSerializer.Serialize(user);
                 HttpContext.Session.SetString("LoggedInUser", jsonUser);
-                if (login.Role == "regular employee")
+                if (login.Role == Role.RegularEmployee)
                 {
                     return RedirectToAction("TicketOverview", "Ticket");
                 }

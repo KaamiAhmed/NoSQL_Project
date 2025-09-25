@@ -16,7 +16,9 @@ namespace IncidentManagementSystem
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<ITicketRepository, TicketRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<ITicketService, TicketService>();
 
             builder.Services.AddSession(options =>
             {
