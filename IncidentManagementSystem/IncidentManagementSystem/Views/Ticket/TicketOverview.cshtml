@@ -1,6 +1,5 @@
 ﻿@{
 	ViewData["Title"] = "Tickets Overview";
-	User? loggedInUser = (User?)ViewData["LoggedInUser"];
 
 	long totalTickets = (long)ViewData["TotalTickets"];
 	long totalOpenTickets = (long)ViewData["TotalOpenTickets"];
@@ -11,7 +10,57 @@
 	double resolvedPercentage = (double)totalResolvedTickets / (int)totalTickets * 100;
 	double closedPercentage = (double)totalClosedTickets / (int)totalTickets * 100;
 }
+
 <div class="main-container d-flex flex-row">
+	<partial name="_SideBar"></partial>
+
+	<div style="width:80%" class="d-flex flex-column">
+		<div class="d-flex flex-column text">
+			<div>
+				<h1 class="ms-2 mb-5 mt-1">Tickets Overview</h1>
+			</div>
+			<div class="d-flex flex-row text-center justify-content-evenly">
+				<div class="circular-progress progress-open">
+					<p><b>Open tickets:</b></p>
+					<svg class="circular-progress-svg" viewBox="0 0 36 36">
+						<path class="circular-progress-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+						<path class="circular-progress-fg"
+							  stroke-dasharray="100"
+							  stroke-dashoffset="@(100 - openPercentage)"
+							  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+					</svg>
+					<div class="circular-progress-text">@totalOpenTickets / @totalTickets</div>
+				</div>
+
+				<div class="circular-progress progress-resolved">
+					<p><b>Resolved tickets:</b></p>
+					<svg class="circular-progress-svg" viewBox="0 0 36 36">
+						<path class="circular-progress-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+						<path class="circular-progress-fg"
+							  stroke-dasharray="100"
+							  stroke-dashoffset="@(100 - resolvedPercentage)"
+							  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+					</svg>
+					<div class="circular-progress-text">@totalResolvedTickets / @totalTickets</div>
+				</div>
+
+				<div class="circular-progress progress-closed">
+					<p><b>Closed tickets:</b></p>
+					<svg class="circular-progress-svg" viewBox="0 0 36 36">
+						<path class="circular-progress-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+						<path class="circular-progress-fg"
+							  stroke-dasharray="100"
+							  stroke-dashoffset="@(100 - closedPercentage)"
+							  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+					</svg>
+					<div class="circular-progress-text">@totalClosedTickets / @totalTickets</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@* <div class="main-container d-flex flex-row">
 	<partial name="_SideBar"></partial>
 
 	<div style="width:80%">
@@ -20,13 +69,15 @@
 		<div class="progress" role="progressbar" style="width:50%;" aria-label="Example with label" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
 			<div class="progress-bar" style="width: @openPercentage%">@Math.Round(openPercentage)%</div>
 		</div>
+		<br />
 		<p>Resolved tickets:@totalResolvedTickets/@totalTickets</p>
 		<div class="progress" role="progressbar" style="width:50%;" aria-label="Example with label" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
 			<div class="progress-bar" style="width: @resolvedPercentage%">@Math.Round(resolvedPercentage)%</div>
 		</div>
+		<br />
 		<p>Closed tickets:@totalClosedTickets/@totalTickets</p>
 		<div class="progress" role="progressbar" style="width:50%;" aria-label="Example with label" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
 			<div class="progress-bar" style="width: @closedPercentage%">@Math.Round(closedPercentage)%</div>
 		</div>
 	</div>
-</div>
+</div> *@

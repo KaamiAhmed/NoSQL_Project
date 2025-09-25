@@ -5,9 +5,9 @@
 	<div class="d-flex flex-column">
 		@if (loggedInUser != null)
 		{
-			<p>@loggedInUser.Name.FirstName @loggedInUser.Name.LastName</p>
+			<p class="p-2" style="text-align:center;font-size:24px;">@loggedInUser.Name.FirstName.ToUpper()  @loggedInUser.Name.LastName.ToUpper()</p>
 		}
-		<a href="/Ticket/TicketOverview">Dashboard</a>
-		<a href="/Ticket/GetMyTickets">My Tickets</a>
+		<a class="w-100 p-3 text-center link" href="/Ticket/TicketOverview">Dashboard</a>
+		<a class="w-100 p-3 text-center link" href="/Ticket/GetMyTickets">My Incidents</a>
 	</div>
 </div>
