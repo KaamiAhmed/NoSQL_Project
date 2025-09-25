@@ -4,10 +4,10 @@
 }
 
 <div class="main-container d-flex flex-row">
-	<partial name="_SideBar" model="@loggedInUser"></partial>
+	<partial name="_SideBar"></partial>
 
 	<div style="width:80%">
-		<h1>My Tickets</h1>
+		<h1 class="ms-2 mt-1 mb-3">My Tickets</h1>
 		@{
 			int count = 1;
 		}
@@ -29,14 +29,14 @@
 
 			var collapseId = $"collapse{ticket.Id}";
 
-			<div class="accordion" id="accordionExample">
+			<div class="accordion" id="accordion">
 				<div class="accordion-item">
 					<h2 class="accordion-header">
 						<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="true" aria-controls="@collapseId">
 							<p>@count: <b>Title:</b> @ticket.Title</p>
 						</button>
 					</h2>
-					<div id="@collapseId" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+					<div id="@collapseId" class="accordion-collapse collapse" data-bs-parent="#accordion">
 						<div class="accordion-body">
 							<p><b>Description:</b> @ticket.Description</p>
 							<p><b>Status:</b> <span class="badge @bgColor">@ticket.Status</span></p>

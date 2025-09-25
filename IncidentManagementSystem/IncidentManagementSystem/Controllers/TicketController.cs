@@ -35,6 +35,7 @@ namespace IncidentManagementSystem.Controllers
             return View();
         }
 
+        [SessionAuthorize(Role.RegularEmployee)]
         public IActionResult GetMyTickets()
         {
             List<Ticket> myTickets = new List<Ticket>();

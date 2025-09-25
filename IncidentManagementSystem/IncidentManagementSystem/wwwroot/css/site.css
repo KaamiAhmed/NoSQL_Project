@@ -20,3 +20,22 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.link {
+    background-color: #6c757d;
+    transition: background-color 0.2s;
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+}
+
+    .link:hover {
+        background-color: lightgreen;
+        text-decoration: none;
+        color: white;
+        font-size: 18px;
+    }
+
+.active-state {
+    background-color: lightgreen;
+}
