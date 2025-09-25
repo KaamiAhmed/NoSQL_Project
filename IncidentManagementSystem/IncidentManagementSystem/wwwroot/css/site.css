@@ -39,3 +39,51 @@ body {
 .active-state {
     background-color: lightgreen;
 }
+
+.circular-progress {
+    position: relative;
+    width: 160px;
+    height: 160px;
+}
+
+.circular-progress-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(0deg);
+}
+
+.circular-progress-bg {
+    fill: none;
+    stroke: #e0e0e0;
+    stroke-width: 4;
+}
+
+.circular-progress-fg {
+    fill: none;
+    stroke-width: 4;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.3s ease;
+}
+
+.circular-progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 90%);
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+
+.progress-open .circular-progress-fg {
+    stroke: #0dcaf0;
+}
+
+.progress-resolved .circular-progress-fg {
+    stroke: #198754;
+}
+
+.progress-closed .circular-progress-fg {
+    stroke: #dc3545;
+}

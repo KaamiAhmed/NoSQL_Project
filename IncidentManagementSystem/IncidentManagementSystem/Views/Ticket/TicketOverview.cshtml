@@ -10,78 +10,6 @@
 	double resolvedPercentage = (double)totalResolvedTickets / (int)totalTickets * 100;
 	double closedPercentage = (double)totalClosedTickets / (int)totalTickets * 100;
 }
-@* <div class="main-container d-flex flex-row">
-	<partial name="_SideBar"></partial>
-
-	<div style="width:80%">
-		<h1>Tickets Overview</h1>
-		<p>Open tickets:@totalOpenTickets/@totalTickets</p>
-		<div class="progress" role="progressbar" style="width:50%;" aria-label="Example with label" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-			<div class="progress-bar" style="width: @openPercentage%">@Math.Round(openPercentage)%</div>
-		</div>
-		<br />
-		<p>Resolved tickets:@totalResolvedTickets/@totalTickets</p>
-		<div class="progress" role="progressbar" style="width:50%;" aria-label="Example with label" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-			<div class="progress-bar" style="width: @resolvedPercentage%">@Math.Round(resolvedPercentage)%</div>
-		</div>
-		<br />
-		<p>Closed tickets:@totalClosedTickets/@totalTickets</p>
-		<div class="progress" role="progressbar" style="width:50%;" aria-label="Example with label" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-			<div class="progress-bar" style="width: @closedPercentage%">@Math.Round(closedPercentage)%</div>
-		</div>
-	</div>
-</div> *@
-
-<style>
-    .circular-progress {
-        position: relative;
-        width: 160px;
-        height: 160px;  
-    }
-
-    .circular-progress-svg {
-        width: 100%;
-        height: 100%;
-        transform: rotate(0deg);
-    }
-
-    .circular-progress-bg {
-        fill: none;
-        stroke: #e0e0e0;
-        stroke-width: 4;
-    }
-
-    .circular-progress-fg {
-        fill: none;
-        stroke-width: 4;
-        stroke-linecap: round;
-        transition: stroke-dashoffset 0.3s ease;
-    }
-
-    .circular-progress-text {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, 90%);
-        font-size: 18px;
-        font-weight: bold;
-        color: #333;
-    }
-
-    
-    .progress-open .circular-progress-fg {
-        stroke: #0dcaf0;
-    }
-    
-    .progress-resolved .circular-progress-fg {
-        stroke: #198754;
-    }
-    
-    .progress-closed .circular-progress-fg {
-        stroke: #dc3545;
-    }
-
-</style>
 
 <div class="main-container d-flex flex-row">
 	<partial name="_SideBar"></partial>
@@ -131,3 +59,25 @@
 		</div>
 	</div>
 </div>
+
+@* <div class="main-container d-flex flex-row">
+	<partial name="_SideBar"></partial>
+
+	<div style="width:80%">
+		<h1>Tickets Overview</h1>
+		<p>Open tickets:@totalOpenTickets/@totalTickets</p>
+		<div class="progress" role="progressbar" style="width:50%;" aria-label="Example with label" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+			<div class="progress-bar" style="width: @openPercentage%">@Math.Round(openPercentage)%</div>
+		</div>
+		<br />
+		<p>Resolved tickets:@totalResolvedTickets/@totalTickets</p>
+		<div class="progress" role="progressbar" style="width:50%;" aria-label="Example with label" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+			<div class="progress-bar" style="width: @resolvedPercentage%">@Math.Round(resolvedPercentage)%</div>
+		</div>
+		<br />
+		<p>Closed tickets:@totalClosedTickets/@totalTickets</p>
+		<div class="progress" role="progressbar" style="width:50%;" aria-label="Example with label" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+			<div class="progress-bar" style="width: @closedPercentage%">@Math.Round(closedPercentage)%</div>
+		</div>
+	</div>
+</div> *@
