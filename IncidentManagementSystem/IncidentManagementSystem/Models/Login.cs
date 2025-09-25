@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace IncidentManagementSystem.Models
 {
@@ -11,6 +12,7 @@ namespace IncidentManagementSystem.Models
         public string Password { get; set; } = "";
 
         [BsonElement("role")]
-        public string Role { get; set; } = "";
+        [BsonRepresentation(BsonType.String)]
+        public Role Role { get; set; }
     }
 }

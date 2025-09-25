@@ -30,7 +30,8 @@ namespace IncidentManagementSystem.Models
         public string Email { get; set; } = "";
 
         [BsonElement("role")]
-        public string Role { get; set; } = "";
+        [BsonRepresentation(BsonType.String)]
+        public Role Role { get; set; }
 
         [BsonElement("branch")]
         public string Branch { get; set; } = "";

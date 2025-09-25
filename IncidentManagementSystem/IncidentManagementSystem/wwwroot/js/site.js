@@ -2,3 +2,10 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+const links = document.querySelectorAll('.link');
+
+links.forEach(link => {
+	if (link.getAttribute('href') === window.location.pathname) {
+		link.classList.add('active-state');
+	}
+});
