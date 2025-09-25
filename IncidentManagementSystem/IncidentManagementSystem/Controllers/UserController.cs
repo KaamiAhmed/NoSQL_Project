@@ -1,4 +1,5 @@
-﻿using IncidentManagementSystem.Models;
+﻿using IncidentManagementSystem.Commons;
+using IncidentManagementSystem.Models;
 using IncidentManagementSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
@@ -9,8 +10,12 @@ namespace IncidentManagementSystem.Controllers
     {
         private readonly IUserService _userService;
 
-        public UserController(IUserService userService) => _userService = userService;
+        public UserController(IUserService userService)
+        {
+            _userService = userService;
+        }
 
+        [SessionAuthorize(Role.ServiceDeskEmployee)]
         public IActionResult Index()
         {
             var users = _userService.GetAll();

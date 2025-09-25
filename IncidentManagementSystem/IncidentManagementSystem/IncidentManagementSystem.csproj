@@ -11,9 +11,4 @@
     <PackageReference Include="MongoDB.Driver" Version="3.5.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Views\ServiceDeskEmployee\" />
-    <Folder Include="Views\RegularEmployee\" />
-  </ItemGroup>
-
 </Project>
