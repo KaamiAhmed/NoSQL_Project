@@ -1,6 +1,8 @@
 ﻿using IncidentManagementSystem.Models;
 using IncidentManagementSystem.Repositories.Interfaces;
 using MongoDB.Driver;
+using System.Security.Cryptography;
+using System.Text;
 namespace IncidentManagementSystem.Repositories
 {
     public class UserRepository : IUserRepository
@@ -22,8 +24,9 @@ namespace IncidentManagementSystem.Repositories
             return _users.Find(_ => true).ToList();
         }
 
-        public void Add(User user) =>
+        public void Add(User user)
+        {
             _users.InsertOne(user);
-
+        }
     }
 }
