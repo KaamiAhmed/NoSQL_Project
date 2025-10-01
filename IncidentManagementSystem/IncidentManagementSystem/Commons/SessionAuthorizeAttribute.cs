@@ -24,9 +24,10 @@ namespace IncidentManagementSystem.Commons
             {
                 loggedInUser = JsonSerializer.Deserialize<User>(userJson);
             }
+
             if (loggedInUser == null || !_requiredRole.Contains(loggedInUser.Role))
             {
-                var controller = (Controller)context.Controller;
+                Controller controller = (Controller)context.Controller;
                 controller.TempData["ErrorMessage"] = "You do not have permission to access this page.";
                 context.HttpContext.Session.Remove("LoggedInUser");
                 context.Result = new RedirectToActionResult("Login", "Home", null);

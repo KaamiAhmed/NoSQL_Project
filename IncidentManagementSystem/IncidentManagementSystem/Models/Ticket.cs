@@ -32,10 +32,13 @@ namespace IncidentManagementSystem.Models
         public Status Status { get; set; }
 
         [BsonElement("deadline")]
-        public string Deadline { get; set; } = "";
+        public int Deadline { get; set; }
 
         [BsonElement("priority")]
         [BsonRepresentation(BsonType.String)]
         public Priority Priority { get; set; }
+
+        [BsonElement("assignedTo")]
+        public AssignedTo? AssignedTo { get; set; }
     }
 }
