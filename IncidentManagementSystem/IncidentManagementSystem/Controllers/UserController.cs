@@ -15,7 +15,7 @@ namespace IncidentManagementSystem.Controllers
             _userService = userService;
         }
 
-        [SessionAuthorize(Role.ServiceDeskEmployee)]
+        [SessionAuthorize(Role.ServiceDeskEmployee, Role.Admin)]
         public IActionResult Index()
         {
             var users = _userService.GetAll();
