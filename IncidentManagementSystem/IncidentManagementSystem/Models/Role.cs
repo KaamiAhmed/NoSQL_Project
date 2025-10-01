@@ -5,6 +5,7 @@ namespace IncidentManagementSystem.Models
     public enum Role
     {
         RegularEmployee,
-        ServiceDeskEmployee
+        ServiceDeskEmployee,
+        Admin
     }
 }
