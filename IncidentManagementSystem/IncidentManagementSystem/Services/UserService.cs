@@ -71,8 +71,14 @@ namespace IncidentManagementSystem.Services
 
         private void SendEmail(string email, string resetUrl)
         {
+            string? host = Environment.GetEnvironmentVariable("SMTP_HOST");
+            int port = int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT"));
+            bool enableSsl = bool.Parse(Environment.GetEnvironmentVariable("SMTP_EnableSsl"));
+            bool useDefaultCredentials = bool.Parse(Environment.GetEnvironmentVariable("SMTP_UseDefaultCredentials"));
+            string? username = Environment.GetEnvironmentVariable("SMTP_EMAIL");
+            string? password = Environment.GetEnvironmentVariable("SMTP_PASSWORD");
             //build MailMessage
-            MailAddress fromEmailAddress = new MailAddress("kamranahmedi1272@gmail.com");
+            MailAddress fromEmailAddress = new MailAddress(username);
             MailAddress toEmailAddress = new MailAddress(email);
 
             MailMessage message = new MailMessage(fromEmailAddress, toEmailAddress);
@@ -82,11 +88,11 @@ namespace IncidentManagementSystem.Services
 
             //use smtp to send mail
             SmtpClient smtpClient = new SmtpClient();
-            smtpClient.Host = "smtp.gmail.com";
-            smtpClient.Port = 587;
-            smtpClient.EnableSsl = true;
-            smtpClient.UseDefaultCredentials = false;
-            smtpClient.Credentials = new NetworkCredential(fromEmailAddress.Address, "dfip bmmn fjrc elkp");
+            smtpClient.Host = host;
+            smtpClient.Port = port;
+            smtpClient.EnableSsl = enableSsl;
+            smtpClient.UseDefaultCredentials = useDefaultCredentials;
+            smtpClient.Credentials = new NetworkCredential(fromEmailAddress.Address, password);
 
             smtpClient.Send(message);
         }
