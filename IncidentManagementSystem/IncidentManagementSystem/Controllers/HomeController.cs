@@ -101,26 +101,27 @@ namespace IncidentManagementSystem.Controllers
                 return Content("Invalid Request");
             }
 
-            return View(user);
+            return View(user.ResetPasswordViewModel);
         }
 
         [HttpPost]
-        public IActionResult ResetPassword(string token, string password, string confirmPassword)
+        public IActionResult ResetPassword(ResetPasswordViewModel resetPasswordViewModel)
         {
-            User user = _userService.CheckTokenValidity(token);
+            User user = _userService.CheckTokenValidity(resetPasswordViewModel.Token);
             if(user == null)
             {
                 return Content("Invalid Request");
             }
 
-            if (password != confirmPassword)
+            if (resetPasswordViewModel.NewPassword != resetPasswordViewModel.ConfirmPassword)
             {
                 ViewBag.Error = "Passwords do not match!";
-                return View(user);
+                return View(user.ResetPasswordViewModel);
             }
 
             //hash password and change it in db and unset the token and expiry fields
-            _userService.ResetPassword(user.Token, password);
+            _userService.ResetPassword(user.ResetPasswordViewModel.Token, resetPasswordViewModel.NewPassword);
+
             TempData["PasswordChanged"] = "Password updated successfully";
             return RedirectToAction("Login");
         }
