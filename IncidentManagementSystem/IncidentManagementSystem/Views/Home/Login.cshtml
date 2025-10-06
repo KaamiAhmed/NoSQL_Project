@@ -13,6 +13,11 @@
 	{
 		<div class="alert alert-danger"> @TempData["ErrorMessage"]</div>
 	}
+
+	if (TempData["PasswordChanged"] != null)
+	{
+		<div class="alert alert-info"> @TempData["PasswordChanged"]</div>
+	}
 }
 <form action="/Home/Login" method="POST">
 	<fieldset>
@@ -40,6 +45,9 @@
 			</select>
 		</div>
 		<br />
-		<input type="submit" value="Login" />
+		<div class="d-flex flex-row justify-content-between">
+			<input type="submit" value="Login" />
+			<a href="/Home/ForgotPassword">Forgot Password?</a>
+		</div>
 	</fieldset>
 </form>
