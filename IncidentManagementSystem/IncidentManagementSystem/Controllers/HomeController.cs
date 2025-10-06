@@ -2,6 +2,8 @@ using IncidentManagementSystem.Models;
 using IncidentManagementSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Net;
+using System.Net.Mail;
 using System.Text.Json;
 
 namespace IncidentManagementSystem.Controllers
@@ -62,6 +64,65 @@ namespace IncidentManagementSystem.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult ForgotPassword(string email)
+        {
+            try
+            {
+                // build base of the link
+                string? resetLink = Url.Action("ResetPassword", "Home", null, Request.Scheme);
+                if (resetLink != null)
+                {
+                    _userService.ForgotPassword(email, resetLink);
+                }
+
+                ViewBag.EmailSent = $"Email with reset password link has been sent to you. Take me to <a href='https://mail.google.com'>Gmail</a>";
+                return View();
+            }
+            catch (Exception ex)
+            {
+                ViewBag.EmailNotSent = $"{ex.Message}";
+                return View();
+            }
+        }
+
+        public IActionResult ResetPassword(string token)
+        {
+            User user = _userService.CheckTokenValidity(token);
+            if(user == null)
+            {
+                return Content("Invalid Request");
+            }
+
+            return View(user);
+        }
+
+        [HttpPost]
+        public IActionResult ResetPassword(string token, string password, string confirmPassword)
+        {
+            User user = _userService.CheckTokenValidity(token);
+            if(user == null)
+            {
+                return Content("Invalid Request");
+            }
+
+            if (password != confirmPassword)
+            {
+                ViewBag.Error = "Passwords do not match!";
+                return View(user);
+            }
+
+            //hash password and change it in db and unset the token and expiry fields
+            _userService.ResetPassword(user.Token, password);
+            TempData["PasswordChanged"] = "Password updated successfully";
+            return RedirectToAction("Login");
         }
     }
 }
