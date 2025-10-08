@@ -1,40 +1,53 @@
 ﻿@model IncidentManagementSystem.Models.Login
 @{
-    Layout = "/Views/Shared/_LoginLayout.cshtml";
-    ViewData["Title"] = "Login";
+	Layout = "/Views/Shared/_LoginLayout.cshtml";
+	ViewData["Title"] = "Login";
 }
 @{
-    if (ViewBag.ErrorMessage != null)
-    {
-        <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
-    }
+	if (ViewBag.ErrorMessage != null)
+	{
+		<div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+	}
 
-    if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger"> @TempData["ErrorMessage"]</div>
-    }
+	if (TempData["ErrorMessage"] != null)
+	{
+		<div class="alert alert-danger"> @TempData["ErrorMessage"]</div>
+	}
+
+	if (TempData["PasswordChanged"] != null)
+	{
+		<div class="alert alert-info"> @TempData["PasswordChanged"]</div>
+	}
 }
 <form action="/Home/Login" method="POST">
-    <fieldset>
-        <legend><b>Login:</b></legend>
-        <div>
-            <label for="UserName">Username:</label><br />
-            <input type="text" name="UserName" id="UserName" required value="@Model?.UserName" />
-        </div>
-        <br />
-        <div>
-            <label for="Password">Password:</label><br />
-            <input type="password" name="Password" id="Password" required value="@Model?.Password" />
-        </div>
+	<fieldset>
+		<legend><b>Login:</b></legend>
+		<div>
+			<label for="UserName">Username:</label><br />
+			<input type="text" name="UserName" id="UserName" required value="@Model?.UserName" />
+		</div>
+		<br />
+		<div>
+			<label for="Password">Password:</label><br />
+			<input type="password" name="Password" id="Password" required value="@Model?.Password" />
+		</div>
 
-        <div>
-            <label for="Role">Role:</label><br />
-            <select name="Role">
-                <option value="RegularEmployee">Regular Employee</option>
-                <option value="ServiceDeskEmployee">Service Desk Employee</option>
-            </select>
-        </div>
-        <br />
-        <input type="submit" value="Login" />
-    </fieldset>
+		<div>
+			<label for="Role">Role:</label><br />
+			<select name="Role">
+				@{
+					var roles = Enum.GetValues(typeof(Role));
+					foreach (var role in roles)
+					{
+						<option value="@role">@role</option>
+					}
+				}
+			</select>
+		</div>
+		<br />
+		<div class="d-flex flex-row justify-content-between">
+			<input type="submit" value="Login" />
+			<a href="/Home/ForgotPassword">Forgot Password?</a>
+		</div>
+	</fieldset>
 </form>
