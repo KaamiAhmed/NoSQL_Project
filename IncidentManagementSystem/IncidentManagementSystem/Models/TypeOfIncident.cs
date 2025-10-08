@@ -5,6 +5,8 @@
         Software,
         Hardware,
         Network,
+        Printing,
+        Security,
         Other
     }
 }
