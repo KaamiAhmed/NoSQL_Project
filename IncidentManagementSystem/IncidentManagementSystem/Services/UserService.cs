@@ -19,19 +19,19 @@ namespace IncidentManagementSystem.Services
             _userRepository = userRepository;
         }
 
-        public void Add(User user)
+        public async Task AddAsync(User user)
         {
-            _userRepository.Add(user);
+            await _userRepository.AddAsync(user);
         }
 
-        public List<User> GetAll()
+        public async Task<List<User>> GetAllAsync()
         {
-            return _userRepository.GetAll();
+            return await _userRepository.GetAllAsync();
         }
 
-        public User? GetUserByLogin(string userName, string password, Role role)
+        public async Task<User> GetUserByLoginAsync(string userName, string password, Role role)
         {
-            return _userRepository.GetUserByLogin(userName, HashPassword(password), role);
+            return await _userRepository.GetUserByLoginAsync(userName, HashPassword(password), role);
         }
 
         private string HashPassword(string password)
@@ -43,14 +43,14 @@ namespace IncidentManagementSystem.Services
             }
         }
 
-        public User EmailAddressExists(string emailAddress)
+        public async Task<User> EmailAddressExistsAsync(string emailAddress)
         {
-            return _userRepository.EmailAddressExists(emailAddress);
+            return await _userRepository.EmailAddressExistsAsync(emailAddress);
         }
 
-        public void ForgotPassword(string email, string resetLink)
+        public async Task ForgotPasswordAsync(string email, string resetLink)
         {
-            User user = _userRepository.EmailAddressExists(email);
+            Task<User> user = _userRepository.EmailAddressExistsAsync(email);
             if (user == null)
             {
                 throw new Exception("Email address not found.");
@@ -61,7 +61,7 @@ namespace IncidentManagementSystem.Services
             DateTime tokenExpiry = DateTime.UtcNow.AddMinutes(15);
 
             //save token in the database
-            _userRepository.AddToken(email, token, tokenExpiry);
+            await _userRepository.AddTokenAsync(email, token, tokenExpiry);
 
             string resetUrl = $"{resetLink}?token={WebUtility.UrlEncode(token)}";
 
@@ -97,14 +97,14 @@ namespace IncidentManagementSystem.Services
             smtpClient.Send(message);
         }
 
-        public User CheckTokenValidity(string token)
+        public async Task<User> CheckTokenValidityAsync(string token)
         {
-            return _userRepository.CheckTokenValidity(token);
+            return await _userRepository.CheckTokenValidityAsync(token);
         }
 
-        public void ResetPassword(string token, string password)
+        public async Task ResetPasswordAsync(string token, string password)
         {
-            _userRepository.ResetPassword(token, HashPassword(password));
+            await _userRepository.ResetPasswordAsync(token, HashPassword(password));
         }
     }
 }
