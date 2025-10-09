@@ -1,6 +1,12 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\.github",
+    "\\IncidentManagementSystem",
+    "\\IncidentManagementSystem\\IncidentManagementSystem",
+    "\\IncidentManagementSystem\\IncidentManagementSystem\\Services",
+    "\\IncidentManagementSystem\\NoSQL_Project_Tests"
   ],
+  "SelectedNode": "\\IncidentManagementSystem\\IncidentManagementSystem\\Services\\TicketService.cs",
   "PreviewInSolutionExplorer": false
 }

@@ -29,7 +29,7 @@ namespace IncidentManagementSystem.Models
         public string Branch { get; set; } = "";
 
         //for password reset
-        public ResetPasswordViewModel ResetPasswordViewModel { get; set; }
+        public ResetPasswordViewModel? ResetPasswordViewModel { get; set; }
 
     }
 }
