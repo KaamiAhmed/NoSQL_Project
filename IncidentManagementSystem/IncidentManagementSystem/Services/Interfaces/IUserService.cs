@@ -4,12 +4,12 @@ namespace IncidentManagementSystem.Services.Interfaces
 {
     public interface IUserService
     {
-        List<User> GetAll();
-        void Add(User user);
-        User? GetUserByLogin(string userName, string password, Role role);
-        User EmailAddressExists(string emailAddress);
-        void ForgotPassword(string email, string resetLink);
-        User CheckTokenValidity(string token);
-        void ResetPassword(string token, string password);
+        Task<List<User>> GetAllAsync();
+        Task AddAsync(User user);
+        Task<User> GetUserByLoginAsync(string userName, string password, Role role);
+        Task<User> EmailAddressExistsAsync(string emailAddress);
+        Task ForgotPasswordAsync(string email, string resetLink);
+        Task<User> CheckTokenValidityAsync(string token);
+        Task ResetPasswordAsync(string token, string password);
     }
 }

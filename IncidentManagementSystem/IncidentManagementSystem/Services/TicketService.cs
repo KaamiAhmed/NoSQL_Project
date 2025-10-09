@@ -13,29 +13,29 @@ namespace IncidentManagementSystem.Services
             _ticketRepository = ticketRepository;
         }
 
-        public List<Ticket> GetTicketsByUser(string id)
+        public async Task<List<Ticket>> GetTicketsByUserAsync(string id)
         {
-            return _ticketRepository.GetTicketsByUser(id);
+            return await _ticketRepository.GetTicketsByUserAsync(id);
         }
 
-        public long GetTickets(string id)
+        public async Task<long> GetTicketsAsync(string id)
         {
-            return _ticketRepository.GetTickets(id);
+            return await _ticketRepository.GetTicketsAsync(id);
         }
 
-        public long GetOpenTickets(string id, Status status)
+        public async Task<long> GetOpenTicketsAsync(string id, Status status)
         {
-            return _ticketRepository.GetOpenTickets(id, status);
+            return await _ticketRepository.GetOpenTicketsAsync(id, status);
         }
 
-        public long GetResolvedTickets(string id, Status status)
+        public async Task<long> GetResolvedTicketsAsync(string id, Status status)
         {
-            return _ticketRepository.GetResolvedTickets(id, status);
+            return await _ticketRepository.GetResolvedTicketsAsync(id, status);
         }
 
-        public long GetClosedTickets(string id, Status status)
+        public async Task<long> GetClosedTicketsAsync(string id, Status status)
         {
-            return _ticketRepository.GetClosedTickets(id, status);
+            return await _ticketRepository.GetClosedTicketsAsync(id, status);
         }
     }
 }
