@@ -16,9 +16,9 @@ namespace IncidentManagementSystem.Controllers
         }
 
         [SessionAuthorize(Role.ServiceDeskEmployee, Role.Admin)]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var users = _userService.GetAll();
+            var users = await _userService.GetAllAsync();
             return View(users);
         }
 

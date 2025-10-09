@@ -16,7 +16,7 @@ namespace IncidentManagementSystem.Controllers
         }
 
         [SessionAuthorize(Role.RegularEmployee)]
-        public IActionResult TicketOverview()
+        public async Task<IActionResult> TicketOverview()
         {
             User? loggedInUser = null;
             string? userJson = HttpContext.Session.GetString("LoggedInUser");
@@ -25,18 +25,18 @@ namespace IncidentManagementSystem.Controllers
                 loggedInUser = JsonSerializer.Deserialize<User>(userJson);
             }
 
-            ViewData["TotalTickets"] = _ticketService.GetTickets(loggedInUser.Id);
+            ViewData["TotalTickets"] = await _ticketService.GetTicketsAsync(loggedInUser.Id);
 
-            ViewData["TotalOpenTickets"] = _ticketService.GetOpenTickets(loggedInUser.Id, Status.Open);
-            ViewData["TotalResolvedTickets"] = _ticketService.GetResolvedTickets(loggedInUser.Id, Status.Resolved);
-            ViewData["TotalClosedTickets"] = _ticketService.GetClosedTickets(loggedInUser.Id, Status.Closed);
+            ViewData["TotalOpenTickets"] = await _ticketService.GetOpenTicketsAsync(loggedInUser.Id, Status.Open);
+            ViewData["TotalResolvedTickets"] = await _ticketService.GetResolvedTicketsAsync(loggedInUser.Id, Status.Resolved);
+            ViewData["TotalClosedTickets"] = await _ticketService.GetClosedTicketsAsync(loggedInUser.Id, Status.Closed);
 
             ViewData["LoggedInUser"] = loggedInUser;
             return View();
         }
 
         [SessionAuthorize(Role.RegularEmployee)]
-        public IActionResult GetMyTickets()
+        public async Task<IActionResult> GetMyTickets()
         {
             List<Ticket> myTickets = new List<Ticket>();
             User? loggedInUser = null;
@@ -48,7 +48,7 @@ namespace IncidentManagementSystem.Controllers
 
             if (loggedInUser != null)
             {
-                myTickets = _ticketService.GetTicketsByUser(loggedInUser.Id);
+                myTickets = await _ticketService.GetTicketsByUserAsync(loggedInUser.Id);
             }
 
             ViewData["LoggedInUser"] = loggedInUser;
