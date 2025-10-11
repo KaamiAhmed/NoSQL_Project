@@ -19,14 +19,41 @@ namespace IncidentManagementSystem.Services
             _userRepository = userRepository;
         }
 
-        public void Add(User user)
+       public List<User> GetAllUsers()
         {
-            _userRepository.Add(user);
+            return _userRepository.GetAllUsers();
         }
 
-        public List<User> GetAll()
+        public User GetById(string id)
         {
-            return _userRepository.GetAll();
+            return _userRepository.GetById(id);
+        }
+
+        public void AddUser(User user)
+        {
+            user.Password = HashPassword(user.Password);
+            _userRepository.AddUser(user);
+        }
+
+        public void UpdateUser(string id, User updatedUser)
+        {
+            if (!string.IsNullOrWhiteSpace(updatedUser.Password))
+            {
+                updatedUser.Password = HashPassword(updatedUser.Password);
+            }
+            else
+            {
+                var existing = _userRepository.GetById(id);
+                if (existing != null)
+                {
+                    updatedUser.Password = existing.Password;
+                }
+            }
+            _userRepository.UpdateUser(id, updatedUser);
+        }
+        public void DeleteUser(string id)
+        {
+            _userRepository.DeleteUser(id);
         }
 
         public User? GetUserByLogin(string userName, string password, Role role)
