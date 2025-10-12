@@ -7,26 +7,70 @@ using System.Net;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 
 namespace IncidentManagementSystem.Services
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IHttpContextAccessor _contextAccessor;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IHttpContextAccessor contextAccessor)
         {
             _userRepository = userRepository;
+            _contextAccessor = contextAccessor;
         }
 
-        public async Task AddAsync(User user)
+        public User? GetLoggedInUser()
         {
-            await _userRepository.AddAsync(user);
+            User? loggedInUser = null;
+            string? userJson = _contextAccessor.HttpContext?.Session.GetString("LoggedInUser");
+
+            if (userJson != null)
+            {
+                loggedInUser = JsonSerializer.Deserialize<User>(userJson);
+            }
+
+            return loggedInUser;
         }
 
-        public async Task<List<User>> GetAllAsync()
+        public async Task AddUserAsync(User user)
         {
-            return await _userRepository.GetAllAsync();
+            user.Password = HashPassword(user.Password);
+            await _userRepository.AddUserAsync(user);
+        }
+
+        public async Task<User> GetByIdAsync(string id)
+        {
+            return await _userRepository.GetByIdAsync(id);
+        }
+
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            return await _userRepository.GetAllUsersAsync();
+        }
+
+        public async Task UpdateUserAsync(string id, User updatedUser)
+        {
+            if (!string.IsNullOrWhiteSpace(updatedUser.Password))
+            {
+                updatedUser.Password = HashPassword(updatedUser.Password);
+            }
+            else
+            {
+                var existing = await _userRepository.GetByIdAsync(id);
+                if (existing != null)
+                {
+                    updatedUser.Password = existing.Password;
+                }
+            }
+            await _userRepository.UpdateUserAsync(id, updatedUser);
+        }
+
+        public async Task DeleteUserAsync(string id)
+        {
+            await _userRepository.DeleteUserAsync(id);
         }
 
         public async Task<User> GetUserByLoginAsync(string userName, string password, Role role)
@@ -43,15 +87,14 @@ namespace IncidentManagementSystem.Services
             }
         }
 
-        public async Task<User> EmailAddressExistsAsync(string emailAddress)
+        public async Task<bool> EmailAddressExistsAsync(string emailAddress)
         {
             return await _userRepository.EmailAddressExistsAsync(emailAddress);
         }
 
         public async Task ForgotPasswordAsync(string email, string resetLink)
         {
-            Task<User> user = _userRepository.EmailAddressExistsAsync(email);
-            if (user == null)
+            if (!await _userRepository.EmailAddressExistsAsync(email))
             {
                 throw new Exception("Email address not found.");
             }
