@@ -24,7 +24,7 @@ namespace IncidentManagementSystem.Commons
             {
                 loggedInUser = JsonSerializer.Deserialize<User>(userJson);
             }
-
+            
             if (loggedInUser == null || !_requiredRole.Contains(loggedInUser.Role))
             {
                 Controller controller = (Controller)context.Controller;

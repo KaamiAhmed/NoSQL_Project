@@ -15,18 +15,64 @@ namespace IncidentManagementSystem.Controllers
             _userService = userService;
         }
 
-        [SessionAuthorize(Role.ServiceDeskEmployee, Role.Admin)]
+        [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Index()
         {
-            var users = await _userService.GetAllAsync();
+            User? loggedInUser = _userService.GetLoggedInUser();
+            ViewData["LoggedInUser"] = loggedInUser;
+            var users = await _userService.GetAllUsersAsync();
             return View(users);
         }
 
-        [HttpPost]
-        public IActionResult Create(string name, string email)
+        //[HttpPost]
+        //public IActionResult Create(string name, string email)
+        //{
+        //    var user = new User { Name = name, Email = email };
+        //    _userService.Add(user);
+        //    return RedirectToAction("Index");
+        //}
+
+        [SessionAuthorize(Role.Admin)]
+        public IActionResult Create()
         {
-            //var user = new User { Name = name, Email = email };
-            //_userService.Add(user);
+            return View();
+        }
+
+        [HttpPost]
+        [SessionAuthorize(Role.Admin)]
+        public async Task<IActionResult> Create(User user)
+        {
+            await _userService.AddUserAsync(user);
+            return RedirectToAction("Index");
+        }
+
+        [SessionAuthorize(Role.Admin)]
+        public async Task<IActionResult> Edit(string id)
+        {
+            var user = await _userService.GetByIdAsync(id);
+            return View(user);
+        }
+
+        [HttpPost]
+        [SessionAuthorize(Role.Admin)]
+        public async Task<IActionResult> Edit(string id, User updatedUser)
+        {
+            await _userService.UpdateUserAsync(id, updatedUser);
+            return RedirectToAction("Index");
+        }
+
+        [SessionAuthorize(Role.Admin)]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var user = await _userService.GetByIdAsync(id);
+            return View(user);
+        }
+
+        [HttpPost]
+        [SessionAuthorize(Role.Admin)]
+        public async Task<IActionResult> DeleteConfirmed(string id)
+        {
+            await _userService.DeleteUserAsync(id);
             return RedirectToAction("Index");
         }
 

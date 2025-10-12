@@ -19,19 +19,42 @@ namespace IncidentManagementSystem.Repositories
             return await _users.Find(u => u.UserName == userName && u.Password == password && u.Role == role).FirstOrDefaultAsync();
         }
 
-        public async Task<List<User>> GetAllAsync()
+        public async Task<User> GetByIdAsync(string id)
+        {
+            return await _users.Find(u => u.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<User>> GetAllUsersAsync()
         {
             return await _users.Find(_ => true).ToListAsync();
         }
 
-        public async Task AddAsync(User user)
+        public async Task AddUserAsync(User user)
         {
             await _users.InsertOneAsync(user);
         }
 
-        public async Task<User> EmailAddressExistsAsync(string emailAddress)
+        public async Task UpdateUserAsync(string id, User updatedUser)
         {
-            return await _users.Find(u => u.Email == emailAddress).FirstOrDefaultAsync();
+            var filter = Builders<User>.Filter.Eq(u => u.Id, id);
+            var update = Builders<User>.Update
+                .Set(u => u.UserName, updatedUser.UserName)
+                .Set(u => u.Email, updatedUser.Email)
+                .Set(u => u.Password, updatedUser.Password)
+                .Set(u => u.Role, updatedUser.Role);
+
+            await _users.UpdateOneAsync(filter, update);
+        }
+
+        public async Task DeleteUserAsync(string id)
+        {
+            await _users.DeleteOneAsync(u => u.Id == id);
+        }
+
+        public async Task<bool> EmailAddressExistsAsync(string emailAddress)
+        {
+            //long count = await _users.CountDocumentsAsync(Builders<User>.Filter.Eq(u => u.Email, emailAddress));
+            return await _users.Find(u => u.Email == emailAddress).AnyAsync();
         }
 
         public async Task AddTokenAsync(string email, string token, DateTime tokenExpiry)

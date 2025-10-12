@@ -1,29 +1,42 @@
-﻿@model List<User>
+﻿@model List<IncidentManagementSystem.Models.User>
+@{
+	// User? loggedInUser = (User?)ViewData["LoggedInUser"];
+}
 
-<h1>Users</h1>
 
-@*  <form method="post" asp-action="Create">
-    <input name="name" placeholder="Name" required />
-    <input name="email" placeholder="Email" type="email" required />
-    <button type="submit">Add</button>
-</form> *@
+<div class="main-container d-flex flex-row">
+	<partial name="_SideBar"></partial>
+	<div style="width:80%">
+		<h2>Users</h2>
 
-<table>
-    <thead>
-        <tr>
-            <th>UserName</th>
-            <th>Name</th>
-            <th>Email</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model)
-        {
-            <tr>
-                <td>@user.UserName</td>
-                <td>@user.Name.FirstName @user.Name.LastName</td>
-                <td>@user.Email</td>
-            </tr>
-        }
-    </tbody>
-</table>
+		<p>
+			<a class="btn btn-primary" asp-action="Create">Create New User</a>
+		</p>
+
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>UserName</th>
+					<th>Name</th>
+					<th>Email</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var user in Model)
+				{
+					<tr>
+						<td>@user.UserName</td>
+						<td>@user.Name</td>
+						<td>@user.Email</td>
+						<td>
+							<a class="btn btn-info btn-sm" asp-action="Edit" asp-route-id="@user.Id">Edit</a>
+							<a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@user.Id">Delete</a>
+							<a class="btn btn-secondary btn-sm" asp-action="Details" asp-route-id="@user.Id">Details</a>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>

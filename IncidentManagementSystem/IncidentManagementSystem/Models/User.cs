@@ -28,7 +28,8 @@ namespace IncidentManagementSystem.Models
         [BsonElement("branch")]
         public string Branch { get; set; } = "";
 
-        //for password reset
+        //for password reset only
+        [BsonIgnoreIfNull]
         public ResetPasswordViewModel? ResetPasswordViewModel { get; set; }
 
     }

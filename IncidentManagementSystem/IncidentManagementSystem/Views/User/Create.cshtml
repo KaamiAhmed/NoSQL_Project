@@ -1,0 +1,41 @@
+﻿@using IncidentManagementSystem.Models
+@{
+    ViewData["Title"] = "Create User";
+}
+
+<h2>Create User</h2>
+
+<form asp-action="Create" method="post">
+    <div>
+        <label>UserName</label>
+        <input name="UserName" />
+    </div>
+
+    <div>
+        <label>Name</label>
+        <input name="Name" />
+    </div>
+
+    <div>
+        <label>Email</label>
+        <input name="Email" type="email" />
+    </div>
+
+    <div>
+        <label>Password</label>
+        <input name="Password" type="password" />
+    </div>
+
+    <div>
+        <label>Role</label>
+        <select name="Role">
+            @foreach (var r in Enum.GetValues(typeof(Role)))
+            {
+                <option value="@r">@r</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit">Save</button>
+    <a asp-action="Index">Cancel</a>
+</form>
