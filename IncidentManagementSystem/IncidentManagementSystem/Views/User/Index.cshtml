@@ -1,19 +1,18 @@
-﻿@model List<User>
+﻿@model List<IncidentManagementSystem.Models.User>
 
-<h1>Users</h1>
+<h2>Users</h2>
 
-@*  <form method="post" asp-action="Create">
-    <input name="name" placeholder="Name" required />
-    <input name="email" placeholder="Email" type="email" required />
-    <button type="submit">Add</button>
-</form> *@
+<p>
+    <a class="btn btn-primary" asp-action="Create">Create New User</a>
+</p>
 
-<table>
+<table class="table table-striped">
     <thead>
         <tr>
             <th>UserName</th>
             <th>Name</th>
             <th>Email</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -21,8 +20,13 @@
         {
             <tr>
                 <td>@user.UserName</td>
-                <td>@user.Name.FirstName @user.Name.LastName</td>
+                <td>@user.Name</td>
                 <td>@user.Email</td>
+                <td>
+                    <a class="btn btn-info btn-sm" asp-action="Edit" asp-route-id="@user.Id">Edit</a>
+                    <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@user.Id">Delete</a>
+                    <a class="btn btn-secondary btn-sm" asp-action="Details" asp-route-id="@user.Id">Details</a>
+                </td>
             </tr>
         }
     </tbody>

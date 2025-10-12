@@ -16,17 +16,51 @@ namespace IncidentManagementSystem.Controllers
         }
 
         [SessionAuthorize(Role.ServiceDeskEmployee, Role.Admin)]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var users = await _userService.GetAllAsync();
+            var users = _userService.GetAllUsers();
             return View(users);
+        }
+        [SessionAuthorize(Role.Admin)]
+        public IActionResult Create()
+        {
+            return View();
+        }
+        [HttpPost]
+        [SessionAuthorize(Role.Admin)]
+        public IActionResult Create(User user)
+        {
+            _userService.AddUser(user);
+            return RedirectToAction("Index");
+        }
+
+        [SessionAuthorize(Role.Admin)]
+        public IActionResult Edit(string id)
+        {
+            var user = _userService.GetById(id);
+            return View(user);
         }
 
         [HttpPost]
-        public IActionResult Create(string name, string email)
+        [SessionAuthorize(Role.Admin)]
+        public IActionResult Edit(string id, User updatedUser)
         {
-            //var user = new User { Name = name, Email = email };
-            //_userService.Add(user);
+            _userService.UpdateUser(id, updatedUser);
+            return RedirectToAction("Index");
+        }
+
+        [SessionAuthorize(Role.Admin)]
+        public IActionResult Delete(string id)
+        {
+            var user = _userService.GetById(id);
+            return View(user);
+        }
+
+        [HttpPost]
+        [SessionAuthorize(Role.Admin)]
+        public IActionResult DeleteConfirmed(string id)
+        {
+            _userService.DeleteUser(id);
             return RedirectToAction("Index");
         }
 

@@ -14,43 +14,62 @@ namespace IncidentManagementSystem.Repositories
             _users = db.GetCollection<User>("User");
         }
 
-        public async Task<User> GetUserByLoginAsync(string userName, string password, Role role)
+        public User GetUserByLogin(string userName, string password, Role role)
         {
-            return await _users.Find(u => u.UserName == userName && u.Password == password && u.Role == role).FirstOrDefaultAsync();
+            return _users.Find(u => u.UserName == userName && u.Password == password && u.Role == role).FirstOrDefault();
+        }
+        public User? GetById(string id)
+        {
+            return _users.Find(u => u.Id == id).FirstOrDefault();
         }
 
-        public async Task<List<User>> GetAllAsync()
+        public List<User> GetAllUsers()
         {
-            return await _users.Find(_ => true).ToListAsync();
+            return _users.Find(_ => true).ToList();
         }
 
-        public async Task AddAsync(User user)
+        public void AddUser(User user)
         {
-            await _users.InsertOneAsync(user);
+            _users.InsertOne(user);
+        }
+        public void UpdateUser(string id, User updatedUser)
+        {
+            var filter = Builders<User>.Filter.Eq(u => u.Id, id);
+            var update = Builders<User>.Update
+                .Set(u => u.UserName, updatedUser.UserName)
+                .Set(u => u.Email, updatedUser.Email)
+                .Set(u => u.Password, updatedUser.Password)
+                .Set(u => u.Role, updatedUser.Role);
+
+            _users.UpdateOne(filter, update);
+        }
+        public void DeleteUser(string id)
+        {
+            _users.DeleteOne(u => u.Id == id);
         }
 
-        public async Task<User> EmailAddressExistsAsync(string emailAddress)
+        public User EmailAddressExists(string emailAddress)
         {
-            return await _users.Find(u => u.Email == emailAddress).FirstOrDefaultAsync();
+            return _users.Find(u => u.Email == emailAddress).FirstOrDefault();
         }
 
-        public async Task AddTokenAsync(string email, string token, DateTime tokenExpiry)
+        public void AddToken(string email, string token, DateTime tokenExpiry)
         {
             var filter = Builders<User>.Filter.Eq(u => u.Email, email);
             var update = Builders<User>.Update.Set(u => u.ResetPasswordViewModel.Token, token).Set(u => u.ResetPasswordViewModel.TokenExpiry, tokenExpiry);
-            await _users.UpdateOneAsync(filter, update);
+            _users.UpdateOne(filter, update);
         }
 
-        public async Task<User> CheckTokenValidityAsync(string token)
+        public User CheckTokenValidity(string token)
         {
-            return await _users.Find(user => user.ResetPasswordViewModel.Token == token &&  user.ResetPasswordViewModel.TokenExpiry > DateTime.UtcNow).FirstOrDefaultAsync();
+            return _users.Find(user => user.ResetPasswordViewModel.Token == token && user.ResetPasswordViewModel.TokenExpiry > DateTime.UtcNow).FirstOrDefault();
         }
 
-        public async Task ResetPasswordAsync(string token, string password)
+        public void ResetPassword(string token, string password)
         {
             var filter = Builders<User>.Filter.Eq(u => u.ResetPasswordViewModel.Token, token);
             var update = Builders<User>.Update.Set(u => u.Password, password).Unset(u => u.ResetPasswordViewModel);
-            await _users.UpdateOneAsync(filter, update);
+            _users.UpdateOne(filter, update);
         }
     }
 }
