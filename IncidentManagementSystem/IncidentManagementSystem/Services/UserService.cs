@@ -73,9 +73,9 @@ namespace IncidentManagementSystem.Services
             await _userRepository.DeleteUserAsync(id);
         }
 
-        public async Task<User> GetUserByLoginAsync(string userName, string password, Role role)
+        public User? GetUserByLogin(string userName, string password, Role role)
         {
-            return await _userRepository.GetUserByLoginAsync(userName, HashPassword(password), role);
+            return _userRepository.GetUserByLogin(userName, HashPassword(password), role);
         }
 
         private string HashPassword(string password)
@@ -89,10 +89,10 @@ namespace IncidentManagementSystem.Services
 
         public async Task<bool> EmailAddressExistsAsync(string emailAddress)
         {
-            return await _userRepository.EmailAddressExistsAsync(emailAddress);
+            return _userRepository.EmailAddressExists(emailAddress);
         }
 
-        public async Task ForgotPasswordAsync(string email, string resetLink)
+        public asynk Task ForgotPassword(string email, string resetLink)
         {
             if (!await _userRepository.EmailAddressExistsAsync(email))
             {
@@ -104,7 +104,7 @@ namespace IncidentManagementSystem.Services
             DateTime tokenExpiry = DateTime.UtcNow.AddMinutes(15);
 
             //save token in the database
-            await _userRepository.AddTokenAsync(email, token, tokenExpiry);
+            await _userRepository.AddToken(email, token, tokenExpiry);
 
             string resetUrl = $"{resetLink}?token={WebUtility.UrlEncode(token)}";
 
