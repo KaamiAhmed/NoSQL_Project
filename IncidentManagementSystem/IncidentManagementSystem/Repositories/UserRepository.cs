@@ -18,21 +18,23 @@ namespace IncidentManagementSystem.Repositories
         {
             return _users.Find(u => u.UserName == userName && u.Password == password && u.Role == role).FirstOrDefault();
         }
-        public User? GetById(string id)
+
+        public async Task<User> GetByIdAsync(string id)
         {
-            return _users.Find(u => u.Id == id).FirstOrDefault();
+            return await _users.Find(u => u.Id == id).FirstOrDefaultAsync();
         }
 
-        public List<User> GetAllUsers()
+        public async Task<List<User>> GetAllUsersAsync()
         {
             return _users.Find(_ => true).ToList();
         }
 
-        public void AddUser(User user)
+        public async Task AddUserAsync(User user)
         {
             _users.InsertOne(user);
         }
-        public void UpdateUser(string id, User updatedUser)
+
+        public async Task UpdateUserAsync(string id, User updatedUser)
         {
             var filter = Builders<User>.Filter.Eq(u => u.Id, id);
             var update = Builders<User>.Update
@@ -41,16 +43,18 @@ namespace IncidentManagementSystem.Repositories
                 .Set(u => u.Password, updatedUser.Password)
                 .Set(u => u.Role, updatedUser.Role);
 
-            _users.UpdateOne(filter, update);
-        }
-        public void DeleteUser(string id)
-        {
-            _users.DeleteOne(u => u.Id == id);
+            await _users.UpdateOneAsync(filter, update);
         }
 
-        public User EmailAddressExists(string emailAddress)
+        public async Task DeleteUserAsync(string id)
         {
-            return _users.Find(u => u.Email == emailAddress).FirstOrDefault();
+            await _users.DeleteOneAsync(u => u.Id == id);
+        }
+
+        public async Task<bool> EmailAddressExistsAsync(string emailAddress)
+        {
+            //long count = await _users.CountDocumentsAsync(Builders<User>.Filter.Eq(u => u.Email, emailAddress));
+            return await _users.Find(u => u.Email == emailAddress).AnyAsync();
         }
 
         public void AddToken(string email, string token, DateTime tokenExpiry)
