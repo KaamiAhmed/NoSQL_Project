@@ -9,21 +9,18 @@ namespace IncidentManagementSystem.Controllers
     public class TicketController : Controller
     {
         private readonly ITicketService _ticketService;
+        private readonly IUserService _userService;
 
-        public TicketController(ITicketService ticketService)
+        public TicketController(ITicketService ticketService, IUserService userService)
         {
             _ticketService = ticketService;
+            _userService = userService;
         }
 
-        [SessionAuthorize(Role.RegularEmployee)]
+        [SessionAuthorize(Role.RegularEmployee, Role.ServiceDeskEmployee, Role.Admin)]
         public async Task<IActionResult> TicketOverview()
         {
-            User? loggedInUser = null;
-            string? userJson = HttpContext.Session.GetString("LoggedInUser");
-            if (userJson != null)
-            {
-                loggedInUser = JsonSerializer.Deserialize<User>(userJson);
-            }
+            User? loggedInUser = _userService.GetLoggedInUser();
 
             ViewData["TotalTickets"] = await _ticketService.GetTicketsAsync(loggedInUser.Id);
 
@@ -35,17 +32,11 @@ namespace IncidentManagementSystem.Controllers
             return View();
         }
 
-        [SessionAuthorize(Role.RegularEmployee)]
+        [SessionAuthorize(Role.RegularEmployee, Role.ServiceDeskEmployee, Role.Admin)]
         public async Task<IActionResult> GetMyTickets()
         {
+            User? loggedInUser = _userService.GetLoggedInUser();
             List<Ticket> myTickets = new List<Ticket>();
-            User? loggedInUser = null;
-            string? userJson = HttpContext.Session.GetString("LoggedInUser");
-            if (userJson != null)
-            {
-                loggedInUser = JsonSerializer.Deserialize<User>(userJson);
-            }
-
             if (loggedInUser != null)
             {
                 myTickets = await _ticketService.GetTicketsByUserAsync(loggedInUser.Id);

@@ -1,5 +1,17 @@
 ﻿@{
 	User? loggedInUser = (User?)ViewData["LoggedInUser"];
+	string incidents = "";
+	if (loggedInUser != null)
+	{
+		if (loggedInUser.Role == Role.RegularEmployee)
+		{
+			incidents = "My Incidents";
+		}
+		else
+		{
+			incidents = "Incidents";
+		}
+	}
 }
 <div style="width:20%;height:100vh;" class="text-white bg-black">
 	<div class="d-flex flex-column">
@@ -8,6 +20,10 @@
 			<p class="p-2" style="text-align:center;font-size:24px;">@loggedInUser.Name.FirstName.ToUpper()  @loggedInUser.Name.LastName.ToUpper()</p>
 		}
 		<a class="w-100 p-3 text-center link" href="/Ticket/TicketOverview">Dashboard</a>
-		<a class="w-100 p-3 text-center link" href="/Ticket/GetMyTickets">My Incidents</a>
+		<a class="w-100 p-3 text-center link" href="/Ticket/GetMyTickets">@incidents</a>
+		@if (loggedInUser != null && loggedInUser.Role == Role.Admin)
+		{
+			<a class="w-100 p-3 text-center link" href="/User/Index">Employees</a>
+		}
 	</div>
 </div>
