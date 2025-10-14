@@ -24,15 +24,20 @@ namespace IncidentManagementSystem.Controllers
             {
                 loggedInUser = JsonSerializer.Deserialize<User>(userJson);
             }
+            if (loggedInUser.Role == Role.RegularEmployee)
+            {
+                ViewData["TotalTickets"] = _ticketService.GetTickets(loggedInUser.Id);
 
-            ViewData["TotalTickets"] = _ticketService.GetTickets(loggedInUser.Id);
-
-            ViewData["TotalOpenTickets"] = _ticketService.GetOpenTickets(loggedInUser.Id, Status.Open);
-            ViewData["TotalResolvedTickets"] = _ticketService.GetResolvedTickets(loggedInUser.Id, Status.Resolved);
-            ViewData["TotalClosedTickets"] = _ticketService.GetClosedTickets(loggedInUser.Id, Status.Closed);
-
+                ViewData["TotalOpenTickets"] = _ticketService.GetOpenTickets(loggedInUser.Id, Status.Open);
+                ViewData["TotalResolvedTickets"] = _ticketService.GetResolvedTickets(loggedInUser.Id, Status.Resolved);
+                ViewData["TotalClosedTickets"] = _ticketService.GetClosedTickets(loggedInUser.Id, Status.Closed);
+            }
+            else {
+                // viewData all tickets
+            }
             ViewData["LoggedInUser"] = loggedInUser;
-            return View();
+                return View();
+           
         }
 
         [SessionAuthorize(Role.RegularEmployee)]
@@ -48,7 +53,14 @@ namespace IncidentManagementSystem.Controllers
 
             if (loggedInUser != null)
             {
-                myTickets = _ticketService.GetTicketsByUser(loggedInUser.Id);
+                if (loggedInUser.Role != Role.RegularEmployee)
+                {
+                    myTickets = _ticketService.GetTicketsByUser(loggedInUser.Id);
+                }
+                else {
+                    // getall tickets
+                }
+
             }
 
             ViewData["LoggedInUser"] = loggedInUser;
