@@ -31,10 +31,10 @@ namespace IncidentManagementSystem.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(Login login)
+        public async Task<IActionResult> Login(Login login)
         {
 
-            User? user = _userService.GetUserByLogin(login.UserName, login.Password, login.Role);
+            User user = await _userService.GetUserByLoginAsync(login.UserName, login.Password, login.Role);
             if (user == null)
             {
                 ViewBag.ErrorMessage = "Wrong credentials";
@@ -65,7 +65,7 @@ namespace IncidentManagementSystem.Controllers
         }
 
         [HttpPost]
-        public IActionResult ForgotPassword(string email)
+        public async Task<IActionResult> ForgotPassword(string email)
         {
             try
             {
@@ -73,7 +73,7 @@ namespace IncidentManagementSystem.Controllers
                 string? resetLink = Url.Action("ResetPassword", "Home", null, Request.Scheme);
                 if (resetLink != null)
                 {
-                    _userService.ForgotPassword(email, resetLink);
+                    await _userService.ForgotPasswordAsync(email, resetLink);
                 }
 
                 ViewBag.EmailSent = $"Email with reset password link has been sent to you. Take me to <a href='https://mail.google.com'>Gmail</a>";
@@ -86,9 +86,9 @@ namespace IncidentManagementSystem.Controllers
             }
         }
 
-        public IActionResult ResetPassword(string token)
+        public async Task<IActionResult> ResetPassword(string token)
         {
-            User user = _userService.CheckTokenValidity(token);
+            User user = await _userService.CheckTokenValidityAsync(token);
             if (user == null)
             {
                 return Content("Invalid Request");
@@ -98,9 +98,9 @@ namespace IncidentManagementSystem.Controllers
         }
 
         [HttpPost]
-        public IActionResult ResetPassword(ResetPasswordViewModel resetPasswordViewModel)
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel resetPasswordViewModel)
         {
-            User user = _userService.CheckTokenValidity(resetPasswordViewModel.Token);
+            User user = await _userService.CheckTokenValidityAsync(resetPasswordViewModel.Token);
             if (user == null)
             {
                 return Content("Invalid Request");
@@ -113,7 +113,7 @@ namespace IncidentManagementSystem.Controllers
             }
 
             //hash password and change it in db and unset the token and expiry fields
-            _userService.ResetPassword(user.ResetPasswordViewModel.Token, resetPasswordViewModel.NewPassword);
+            await _userService.ResetPasswordAsync(user.ResetPasswordViewModel.Token, resetPasswordViewModel.NewPassword);
 
             TempData["PasswordChanged"] = "Password updated successfully";
             return RedirectToAction("Login");

@@ -26,7 +26,9 @@ namespace IncidentManagementSystem.Models
         public Role Role { get; set; }
 
         [BsonElement("branch")]
-        public string Branch { get; set; } = "";
+        [BsonRepresentation(BsonType.String)]
+        public Branch Branch { get; set; }
+
 
         //for password reset only
         [BsonIgnoreIfNull]
