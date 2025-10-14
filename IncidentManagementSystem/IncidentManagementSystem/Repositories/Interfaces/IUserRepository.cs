@@ -17,7 +17,6 @@ namespace IncidentManagementSystem.Repositories.Interfaces
         List<User> GetAllUsers();
         Task<List<User>> GetAllUsersAsync();
 
-        List<string> GetDistinctBranches();
         Task<List<string>> GetDistinctBranchesAsync();
 
         // -------- Create --------
