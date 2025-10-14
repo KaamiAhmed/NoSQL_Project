@@ -2,6 +2,7 @@
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\mahmo\\source\\repos\\NoSQL_Project\\",
   "Documents": [],
+
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,15 +10,21 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+
+          "SelectedChildIndex": 0,
           "Children": [
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{e1b7d1f8-9b3c-49b1-8f4f-bfc63a88835d}"
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "TicketService.cs",
+              "DocumentMoniker": "E:\\Inholland\\year2\\1st term\\NoSQL_Project\\IncidentManagementSystem\\IncidentManagementSystem\\Services\\TicketService.cs",
+              "RelativeDocumentMoniker": "IncidentManagementSystem\\IncidentManagementSystem\\Services\\TicketService.cs",
+              "ToolTip": "E:\\Inholland\\year2\\1st term\\NoSQL_Project\\IncidentManagementSystem\\IncidentManagementSystem\\Services\\TicketService.cs",
+              "RelativeToolTip": "IncidentManagementSystem\\IncidentManagementSystem\\Services\\TicketService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-08T11:20:36.71Z",
+              "EditorCaption": ""
             }
           ]
         }

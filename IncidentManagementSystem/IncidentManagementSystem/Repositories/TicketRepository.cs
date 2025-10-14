@@ -13,29 +13,29 @@ namespace IncidentManagementSystem.Repositories
             _tickets = db.GetCollection<Ticket>("Ticket");
         }
 
-        public List<Ticket> GetTicketsByUser(string id)
+        public async Task<List<Ticket>> GetTicketsByUserAsync(string id)
         {
-            return _tickets.Find(Builders<Ticket>.Filter.Eq(t => t.ReportedBy, id)).ToList();
+            return await _tickets.Find(Builders<Ticket>.Filter.Eq(t => t.ReportedBy, id)).ToListAsync();
         }
 
-        public long GetTickets(string id)
+        public async Task<long> GetTicketsAsync(string id)
         {
-            return _tickets.CountDocuments(Builders<Ticket>.Filter.Eq(t => t.ReportedBy, id));
+            return await _tickets.CountDocumentsAsync(Builders<Ticket>.Filter.Eq(t => t.ReportedBy, id));
         }
 
-        public long GetOpenTickets(string id, Status status)
+        public async Task<long> GetOpenTicketsAsync(string id, Status status)
         {
-            return _tickets.CountDocuments(Builders<Ticket>.Filter.Eq(t => t.ReportedBy, id) & Builders<Ticket>.Filter.Eq(t => t.Status, Status.Open));
+            return await _tickets.CountDocumentsAsync(Builders<Ticket>.Filter.Eq(t => t.ReportedBy, id) & Builders<Ticket>.Filter.Eq(t => t.Status, Status.Open));
         }
 
-        public long GetResolvedTickets(string id, Status status)
+        public async Task<long> GetResolvedTicketsAsync(string id, Status status)
         {
-            return _tickets.CountDocuments(Builders<Ticket>.Filter.Eq(t => t.ReportedBy, id) & Builders<Ticket>.Filter.Eq(t => t.Status, Status.Resolved));
+            return await _tickets.CountDocumentsAsync(Builders<Ticket>.Filter.Eq(t => t.ReportedBy, id) & Builders<Ticket>.Filter.Eq(t => t.Status, Status.Resolved));
         }
 
-        public long GetClosedTickets(string id, Status status)
+        public async Task<long> GetClosedTicketsAsync(string id, Status status)
         {
-            return _tickets.CountDocuments(Builders<Ticket>.Filter.Eq(t => t.ReportedBy, id) & Builders<Ticket>.Filter.Eq(t => t.Status, Status.Closed));
+            return await _tickets.CountDocumentsAsync(Builders<Ticket>.Filter.Eq(t => t.ReportedBy, id) & Builders<Ticket>.Filter.Eq(t => t.Status, Status.Closed));
         }
     }
 }

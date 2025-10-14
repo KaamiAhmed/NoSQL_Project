@@ -44,14 +44,7 @@ namespace IncidentManagementSystem.Controllers
             {
                 string jsonUser = JsonSerializer.Serialize(user);
                 HttpContext.Session.SetString("LoggedInUser", jsonUser);
-                if (login.Role == Role.RegularEmployee)
-                {
-                    return RedirectToAction("TicketOverview", "Ticket");
-                }
-                else
-                {
-                    return RedirectToAction("Index", "User");
-                }
+                return RedirectToAction("TicketOverview", "Ticket");
             }
         }
 
@@ -76,7 +69,7 @@ namespace IncidentManagementSystem.Controllers
         {
             try
             {
-                // build base of the link
+                // build base link
                 string? resetLink = Url.Action("ResetPassword", "Home", null, Request.Scheme);
                 if (resetLink != null)
                 {
@@ -96,7 +89,7 @@ namespace IncidentManagementSystem.Controllers
         public IActionResult ResetPassword(string token)
         {
             User user = _userService.CheckTokenValidity(token);
-            if(user == null)
+            if (user == null)
             {
                 return Content("Invalid Request");
             }
@@ -108,7 +101,7 @@ namespace IncidentManagementSystem.Controllers
         public IActionResult ResetPassword(ResetPasswordViewModel resetPasswordViewModel)
         {
             User user = _userService.CheckTokenValidity(resetPasswordViewModel.Token);
-            if(user == null)
+            if (user == null)
             {
                 return Content("Invalid Request");
             }

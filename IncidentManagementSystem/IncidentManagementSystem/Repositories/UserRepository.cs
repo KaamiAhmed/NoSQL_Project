@@ -1,8 +1,7 @@
 ﻿using IncidentManagementSystem.Models;
 using IncidentManagementSystem.Repositories.Interfaces;
 using MongoDB.Driver;
-using System.Security.Cryptography;
-using System.Text;
+
 namespace IncidentManagementSystem.Repositories
 {
     public class UserRepository : IUserRepository
@@ -14,24 +13,47 @@ namespace IncidentManagementSystem.Repositories
             _users = db.GetCollection<User>("User");
         }
 
+        // ---------- Auth / lookups ----------
         public User GetUserByLogin(string userName, string password, Role role)
         {
-            return _users.Find(u => u.UserName == userName && u.Password == password && u.Role == role).FirstOrDefault();
+            return _users
+                .Find(u => u.UserName == userName && u.Password == password && u.Role == role)
+                .FirstOrDefault();
         }
+
         public User? GetById(string id)
         {
             return _users.Find(u => u.Id == id).FirstOrDefault();
         }
 
+        public async Task<User?> GetByIdAsync(string id)
+        {
+            return await _users.Find(u => u.Id == id).FirstOrDefaultAsync();
+        }
+
+        // ---------- Read ----------
         public List<User> GetAllUsers()
         {
             return _users.Find(_ => true).ToList();
         }
 
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            return await _users.Find(_ => true).ToListAsync();
+        }
+
+        // ---------- Create ----------
         public void AddUser(User user)
         {
             _users.InsertOne(user);
         }
+
+        public async Task AddUserAsync(User user)
+        {
+            await _users.InsertOneAsync(user);
+        }
+
+        // ---------- Update ----------
         public void UpdateUser(string id, User updatedUser)
         {
             var filter = Builders<User>.Filter.Eq(u => u.Id, id);
@@ -43,46 +65,82 @@ namespace IncidentManagementSystem.Repositories
 
             _users.UpdateOne(filter, update);
         }
+
+        public async Task UpdateUserAsync(string id, User updatedUser)
+        {
+            var filter = Builders<User>.Filter.Eq(u => u.Id, id);
+            var update = Builders<User>.Update
+                .Set(u => u.UserName, updatedUser.UserName)
+                .Set(u => u.Email, updatedUser.Email)
+                .Set(u => u.Password, updatedUser.Password)
+                .Set(u => u.Role, updatedUser.Role);
+
+            await _users.UpdateOneAsync(filter, update);
+        }
+
+        // ---------- Delete ----------
         public void DeleteUser(string id)
         {
             _users.DeleteOne(u => u.Id == id);
         }
 
-        public User EmailAddressExists(string emailAddress)
+        public async Task DeleteUserAsync(string id)
         {
-            return _users.Find(u => u.Email == emailAddress).FirstOrDefault();
+            await _users.DeleteOneAsync(u => u.Id == id);
         }
+
+        // ---------- Existence checks ----------
+        public async Task<bool> EmailAddressExistsAsync(string emailAddress)
+        {
+            return await _users.Find(u => u.Email == emailAddress).AnyAsync();
+        }
+
         public User? UserNameExists(string userName)
         {
             return _users.Find(u => u.UserName == userName).FirstOrDefault();
         }
 
-
-
+        // ---------- Password reset token ----------
         public void AddToken(string email, string token, DateTime tokenExpiry)
         {
             var filter = Builders<User>.Filter.Eq(u => u.Email, email);
-            var update = Builders<User>.Update.Set(u => u.ResetPasswordViewModel.Token, token).Set(u => u.ResetPasswordViewModel.TokenExpiry, tokenExpiry);
+            var update = Builders<User>.Update
+                .Set(u => u.ResetPasswordViewModel.Token, token)
+                .Set(u => u.ResetPasswordViewModel.TokenExpiry, tokenExpiry);
+
             _users.UpdateOne(filter, update);
         }
 
-        public User CheckTokenValidity(string token)
+        public User? CheckTokenValidity(string token)
         {
-            return _users.Find(user => user.ResetPasswordViewModel.Token == token &&  user.ResetPasswordViewModel.TokenExpiry > DateTime.UtcNow).FirstOrDefault();
+            return _users.Find(user =>
+                user.ResetPasswordViewModel.Token == token &&
+                user.ResetPasswordViewModel.TokenExpiry > DateTime.UtcNow
+            ).FirstOrDefault();
         }
 
         public void ResetPassword(string token, string password)
         {
             var filter = Builders<User>.Filter.Eq(u => u.ResetPasswordViewModel.Token, token);
-            var update = Builders<User>.Update.Set(u => u.Password, password).Unset(u => u.ResetPasswordViewModel);
+            var update = Builders<User>.Update
+                .Set(u => u.Password, password)
+                .Unset(u => u.ResetPasswordViewModel);
+
             _users.UpdateOne(filter, update);
         }
 
+        // ---------- Branches ----------
         public List<string> GetDistinctBranches()
         {
-            // Uses Mongo distinct on the "branch" field
+            // NOTE: if your BSON field name differs (e.g., "Branch" vs "branch"),
+            // adjust the field name to match your serialization config.
             return _users.Distinct<string>("branch", FilterDefinition<User>.Empty).ToList();
         }
 
+        // Optional async variant if you need it later:
+        public async Task<List<string>> GetDistinctBranchesAsync()
+        {
+            return await _users.Distinct<string>("branch", FilterDefinition<User>.Empty).ToListAsync();
+        }
     }
 }

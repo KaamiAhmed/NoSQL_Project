@@ -30,8 +30,9 @@ namespace IncidentManagementSystem.Models
         public Branch Branch { get; set; }
 
 
-        //for password reset
-        public ResetPasswordViewModel ResetPasswordViewModel { get; set; }
+        //for password reset only
+        [BsonIgnoreIfNull]
+        public ResetPasswordViewModel? ResetPasswordViewModel { get; set; }
 
     }
 }

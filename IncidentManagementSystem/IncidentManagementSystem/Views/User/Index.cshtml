@@ -1,46 +1,43 @@
 ﻿@model List<IncidentManagementSystem.Models.User>
 
-<h2>Users</h2>
+@{
+	// User? loggedInUser = (User?)ViewData["LoggedInUser"];
+}
 
-<p>
-    <a class="btn btn-primary" asp-action="Create">Create New User</a>
-</p>
 
-<table class="table table-striped table-hover align-middle">
-    <thead>
-        <tr>
-            <th>UserName</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Branch</th>
-            <th>Actions</th>
-            <th>Id(test)</th>
+<div class="main-container d-flex flex-row">
+	<partial name="_SideBar"></partial>
+	<div style="width:80%">
+		<h2>Users</h2>
 
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model)
-        {
-            <tr>
-                <td>@user.UserName</td>
+		<p>
+			<a class="btn btn-primary" asp-action="Create">Create New User</a>
+		</p>
 
-                <td>
-                    @((user.Name?.FirstName ?? "") +
-                        (string.IsNullOrWhiteSpace(user.Name?.LastName) ? "" : " " + user.Name.LastName))
-                </td>
-
-                <td>@user.Email</td>
-                <td>@user.Role</td>
-                <td>@user.Branch</td>
-
-                <td>
-                    <a class="btn btn-info btn-sm" asp-action="Edit" asp-route-id="@user.Id">Edit</a>
-                    <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@user.Id">Delete</a>
-                </td>
-                <td>@user.Id</td>
-
-            </tr>
-        }
-    </tbody>
-</table>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>UserName</th>
+					<th>Name</th>
+					<th>Email</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var user in Model)
+				{
+					<tr>
+						<td>@user.UserName</td>
+						<td>@user.Name</td>
+						<td>@user.Email</td>
+						<td>
+							<a class="btn btn-info btn-sm" asp-action="Edit" asp-route-id="@user.Id">Edit</a>
+							<a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@user.Id">Delete</a>
+							<a class="btn btn-secondary btn-sm" asp-action="Details" asp-route-id="@user.Id">Details</a>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>

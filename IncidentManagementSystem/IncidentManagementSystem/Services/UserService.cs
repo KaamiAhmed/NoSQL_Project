@@ -1,48 +1,65 @@
 ﻿using IncidentManagementSystem.Models;
 using IncidentManagementSystem.Repositories.Interfaces;
 using IncidentManagementSystem.Services.Interfaces;
-using MongoDB.Driver;
-using System;
+using Microsoft.AspNetCore.Http;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 
 namespace IncidentManagementSystem.Services
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IHttpContextAccessor _contextAccessor;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IHttpContextAccessor contextAccessor)
         {
             _userRepository = userRepository;
+            _contextAccessor = contextAccessor;
         }
 
-       public List<User> GetAllUsers()
+        // ---------------- Session / Context ----------------
+        public User? GetLoggedInUser()
         {
-            return _userRepository.GetAllUsers();
+            string? userJson = _contextAccessor.HttpContext?.Session.GetString("LoggedInUser");
+            return userJson != null ? JsonSerializer.Deserialize<User>(userJson) : null;
         }
 
-        public User GetById(string id)
+        // ---------------- Read ----------------
+        public async Task<User?> GetByIdAsync(string id)
         {
-            return _userRepository.GetById(id);
+            return await _userRepository.GetByIdAsync(id);
         }
-        public List<string> GetDistinctBranches() => _userRepository.GetDistinctBranches();
 
-        public void AddUser(User user)
+        public async Task<List<User>> GetAllUsersAsync()
         {
+            return await _userRepository.GetAllUsersAsync();
+        }
+
+        public List<string> GetDistinctBranches()
+        {
+            return _userRepository.GetDistinctBranches();
+        }
+
+        // ---------------- Create ----------------
+        public async Task AddUserAsync(User user)
+        {
+            // Uniqueness checks
             if (_userRepository.UserNameExists(user.UserName) != null)
-                throw new Exception("username already exists.");
+                throw new Exception("Username already exists.");
 
-            if (_userRepository.EmailAddressExists(user.Email) != null)
-                throw new Exception("Emailaddress already exists.");
+            if (await _userRepository.EmailAddressExistsAsync(user.Email))
+                throw new Exception("Email address already exists.");
 
             user.Password = HashPassword(user.Password);
-            _userRepository.AddUser(user);
+            await _userRepository.AddUserAsync(user);
         }
 
-        public void UpdateUser(string id, User updatedUser)
+        // ---------------- Update ----------------
+        public async Task UpdateUserAsync(string id, User updatedUser)
         {
             if (!string.IsNullOrWhiteSpace(updatedUser.Password))
             {
@@ -50,19 +67,24 @@ namespace IncidentManagementSystem.Services
             }
             else
             {
-                var existing = _userRepository.GetById(id);
+                var existing = await _userRepository.GetByIdAsync(id);
                 if (existing != null)
                 {
+                    // preserve current hashed password
                     updatedUser.Password = existing.Password;
                 }
             }
-            _userRepository.UpdateUser(id, updatedUser);
-        }
-        public void DeleteUser(string id)
-        {
-            _userRepository.DeleteUser(id);
+
+            await _userRepository.UpdateUserAsync(id, updatedUser);
         }
 
+        // ---------------- Delete ----------------
+        public async Task DeleteUserAsync(string id)
+        {
+            await _userRepository.DeleteUserAsync(id);
+        }
+
+        // ---------------- Auth ----------------
         public User? GetUserByLogin(string userName, string password, Role role)
         {
             return _userRepository.GetUserByLogin(userName, HashPassword(password), role);
@@ -70,80 +92,84 @@ namespace IncidentManagementSystem.Services
 
         private string HashPassword(string password)
         {
-            using (SHA256 sha256 = SHA256.Create())
-            {
-                byte[] hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                return Convert.ToBase64String(hashBytes);
-            }
+            using var sha256 = SHA256.Create();
+            byte[] hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+            return Convert.ToBase64String(hashBytes);
         }
 
-        public User EmailAddressExists(string emailAddress)
+        // ---------------- Existence checks ----------------
+        public async Task<bool> EmailAddressExistsAsync(string emailAddress)
         {
-            return _userRepository.EmailAddressExists(emailAddress);
-        }
-        public User UserNameExists(string emailAddress)
-        {
-            return _userRepository.EmailAddressExists(emailAddress);
+            return await _userRepository.EmailAddressExistsAsync(emailAddress);
         }
 
-        public void ForgotPassword(string email, string resetLink)
+        public User? UserNameExists(string userName)
         {
-            User user = _userRepository.EmailAddressExists(email);
-            if (user == null)
-            {
+            return _userRepository.UserNameExists(userName);
+        }
+
+        // ---------------- Password reset flow ----------------
+        public async Task ForgotPassword(string email, string resetLink)
+        {
+            if (!await _userRepository.EmailAddressExistsAsync(email))
                 throw new Exception("Email address not found.");
-            }
 
             // Generate token
             string token = Guid.NewGuid().ToString();
             DateTime tokenExpiry = DateTime.UtcNow.AddMinutes(15);
 
-            //save token in the database
+            // Save token (repository has sync method; that’s fine here)
             _userRepository.AddToken(email, token, tokenExpiry);
 
             string resetUrl = $"{resetLink}?token={WebUtility.UrlEncode(token)}";
 
-            //send email
+            // Send email
             SendEmail(email, resetUrl);
         }
 
         private void SendEmail(string email, string resetUrl)
         {
-            string? host = Environment.GetEnvironmentVariable("SMTP_HOST");
-            int port = int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT"));
-            bool enableSsl = bool.Parse(Environment.GetEnvironmentVariable("SMTP_EnableSsl"));
-            bool useDefaultCredentials = bool.Parse(Environment.GetEnvironmentVariable("SMTP_UseDefaultCredentials"));
-            string? username = Environment.GetEnvironmentVariable("SMTP_EMAIL");
-            string? password = Environment.GetEnvironmentVariable("SMTP_PASSWORD");
-            //build MailMessage
-            MailAddress fromEmailAddress = new MailAddress(username);
-            MailAddress toEmailAddress = new MailAddress(email);
+            // Read SMTP config (with basic fallbacks to avoid null refs)
+            string host = Environment.GetEnvironmentVariable("SMTP_HOST") ?? "localhost";
+            int port = int.TryParse(Environment.GetEnvironmentVariable("SMTP_PORT"), out var p) ? p : 25;
+            bool enableSsl = bool.TryParse(Environment.GetEnvironmentVariable("SMTP_EnableSsl"), out var ssl) && ssl;
+            bool useDefaultCredentials = bool.TryParse(Environment.GetEnvironmentVariable("SMTP_UseDefaultCredentials"), out var udc) && udc;
+            string username = Environment.GetEnvironmentVariable("SMTP_EMAIL") ?? "no-reply@example.com";
+            string password = Environment.GetEnvironmentVariable("SMTP_PASSWORD") ?? string.Empty;
 
-            MailMessage message = new MailMessage(fromEmailAddress, toEmailAddress);
-            message.Subject = "Reset Password";
-            message.Body = $"Please click on the link to reset your password. <a href='{resetUrl}'>Reset Password</a><br> The link will expire after 15 minutes.";
-            message.IsBodyHtml = true;
+            var fromEmailAddress = new MailAddress(username);
+            var toEmailAddress = new MailAddress(email);
 
-            //use smtp to send mail
-            SmtpClient smtpClient = new SmtpClient();
-            smtpClient.Host = host;
-            smtpClient.Port = port;
-            smtpClient.EnableSsl = enableSsl;
-            smtpClient.UseDefaultCredentials = useDefaultCredentials;
-            smtpClient.Credentials = new NetworkCredential(fromEmailAddress.Address, password);
+            var message = new MailMessage(fromEmailAddress, toEmailAddress)
+            {
+                Subject = "Reset Password",
+                Body = $"Please click the link to reset your password: <a href='{resetUrl}'>Reset Password</a><br/>The link will expire after 15 minutes.",
+                IsBodyHtml = true
+            };
+
+            using var smtpClient = new SmtpClient
+            {
+                Host = host,
+                Port = port,
+                EnableSsl = enableSsl,
+                UseDefaultCredentials = useDefaultCredentials,
+                Credentials = useDefaultCredentials ? CredentialCache.DefaultNetworkCredentials : new NetworkCredential(fromEmailAddress.Address, password)
+            };
 
             smtpClient.Send(message);
         }
 
-        public User CheckTokenValidity(string token)
+        // Async-style wrappers over sync repository methods (keeps your async controller/service flow)
+        public Task<User?> CheckTokenValidityAsync(string token)
         {
-            return _userRepository.CheckTokenValidity(token);
+            var user = _userRepository.CheckTokenValidity(token);
+            return Task.FromResult(user);
         }
 
-        public void ResetPassword(string token, string password)
+        public Task ResetPasswordAsync(string token, string password)
         {
             _userRepository.ResetPassword(token, HashPassword(password));
+            return Task.CompletedTask;
         }
-
     }
 }
