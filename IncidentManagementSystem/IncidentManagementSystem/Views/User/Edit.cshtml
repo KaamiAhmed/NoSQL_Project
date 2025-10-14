@@ -1,0 +1,68 @@
+﻿@using IncidentManagementSystem.Models
+@model IncidentManagementSystem.Models.User
+@{
+    ViewData["Title"] = "Edit User";
+}
+
+<h2>Edit User</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" name="Id" value="@Model.Id" />
+
+    <div>
+        <label>UserName</label>
+        <input name="UserName" value="@Model.UserName" />
+    </div>
+
+    <div>
+        <label>First Name</label>
+        <input name="Name.FirstName" value="@Model.Name?.FirstName" />
+    </div>
+
+    <div>
+        <label>Last Name</label>
+        <input name="Name.LastName" value="@Model.Name?.LastName" />
+    </div>
+
+    <div>
+        <label>Email</label>
+        <input name="Email" type="email" value="@Model.Email" />
+    </div>
+
+    <div>
+        <label>Role</label>
+        <select name="Role">
+            @foreach (Role r in Enum.GetValues(typeof(Role)))
+            {
+                if (r == Model.Role)
+                {
+                    <option value="@r" selected>@r</option>
+                }
+                else
+                {
+                    <option value="@r">@r</option>
+                }
+            }
+        </select>
+    </div>
+
+    @* <div> *@
+    @*     <label>Branch</label> *@
+    @*     <select name="Branch"> *@
+    @*         @foreach (Branch b in Enum.GetValues(typeof(Branch))) *@
+    @*         { *@
+    @*             if (b == Model.Branch) *@
+    @*             { *@
+    @*                 <option value="@b" selected>@b</option> *@
+    @*             } *@
+    @*             else *@
+    @*             { *@
+    @*                 <option value="@b">@b</option> *@
+    @*             } *@
+    @*         } *@
+    @*     </select> *@
+    @* </div> *@
+
+    <button type="submit">Save</button>
+    <a asp-action="Index">Cancel</a>
+</form>

@@ -26,10 +26,13 @@ namespace IncidentManagementSystem.Models
         public Role Role { get; set; }
 
         [BsonElement("branch")]
-        public string Branch { get; set; } = "";
+        [BsonRepresentation(BsonType.String)]
+        public Branch Branch { get; set; }
 
-        //for password reset
-        public ResetPasswordViewModel ResetPasswordViewModel { get; set; }
+
+        //for password reset only
+        [BsonIgnoreIfNull]
+        public ResetPasswordViewModel? ResetPasswordViewModel { get; set; }
 
     }
 }

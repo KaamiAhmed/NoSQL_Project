@@ -7,31 +7,87 @@ using System.Net;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 
 namespace IncidentManagementSystem.Services
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IHttpContextAccessor _contextAccessor;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IHttpContextAccessor contextAccessor)
         {
             _userRepository = userRepository;
+            _contextAccessor = contextAccessor;
         }
 
-        public void Add(User user)
+        public User? GetLoggedInUser()
         {
-            _userRepository.Add(user);
+            User? loggedInUser = null;
+            string? userJson = _contextAccessor.HttpContext?.Session.GetString("LoggedInUser");
+
+            if (userJson != null)
+            {
+                loggedInUser = JsonSerializer.Deserialize<User>(userJson);
+            }
+
+            return loggedInUser;
         }
 
-        public List<User> GetAll()
+        public async Task<User> GetByIdAsync(string id)
         {
-            return _userRepository.GetAll();
+            return await _userRepository.GetByIdAsync(id);
         }
 
-        public User? GetUserByLogin(string userName, string password, Role role)
+        public async Task<List<string>> GetDistinctBranchesAsync()
         {
-            return _userRepository.GetUserByLogin(userName, HashPassword(password), role);
+            return await _userRepository.GetDistinctBranchesAsync();
+        }
+
+        public async Task AddUserAsync(User user)
+        {
+            // Uniqueness checks
+            if (await _userRepository.UserNameExistsAsync(user.UserName) != null)
+                throw new Exception("Username already exists.");
+
+            if (await _userRepository.EmailAddressExistsAsync(user.Email))
+                throw new Exception("Email address already exists.");
+            user.Password = HashPassword(user.Password);
+            await _userRepository.AddUserAsync(user);
+        }
+            
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            return await _userRepository.GetAllUsersAsync();
+        }
+
+        public async Task UpdateUserAsync(string id, User updatedUser)
+        {
+            if (!string.IsNullOrWhiteSpace(updatedUser.Password))
+            {
+                updatedUser.Password = HashPassword(updatedUser.Password);
+            }
+            else
+            {
+                var existing = await _userRepository.GetByIdAsync(id);
+                if (existing != null)
+                {
+                    updatedUser.Password = existing.Password;
+                }
+            }
+
+            await _userRepository.UpdateUserAsync(id, updatedUser);
+        }
+
+        public async Task DeleteUserAsync(string id)
+        {
+            await _userRepository.DeleteUserAsync(id);
+        }
+
+        public async Task<User> GetUserByLoginAsync(string userName, string password, Role role)
+        {
+            return await _userRepository.GetUserByLoginAsync(userName, HashPassword(password), role);
         }
 
         private string HashPassword(string password)
@@ -43,15 +99,19 @@ namespace IncidentManagementSystem.Services
             }
         }
 
-        public User EmailAddressExists(string emailAddress)
+        public async Task<bool> EmailAddressExistsAsync(string emailAddress)
         {
-            return _userRepository.EmailAddressExists(emailAddress);
+            return await _userRepository.EmailAddressExistsAsync(emailAddress);
         }
 
-        public void ForgotPassword(string email, string resetLink)
+        public async Task<User> UserNameExistsAsync(string userName)
         {
-            User user = _userRepository.EmailAddressExists(email);
-            if (user == null)
+            return await _userRepository.UserNameExistsAsync(userName);
+        }
+
+        public async Task ForgotPasswordAsync(string email, string resetLink)
+        {
+            if (!await _userRepository.EmailAddressExistsAsync(email))
             {
                 throw new Exception("Email address not found.");
             }
@@ -61,7 +121,7 @@ namespace IncidentManagementSystem.Services
             DateTime tokenExpiry = DateTime.UtcNow.AddMinutes(15);
 
             //save token in the database
-            _userRepository.AddToken(email, token, tokenExpiry);
+            await _userRepository.AddTokenAsync(email, token, tokenExpiry);
 
             string resetUrl = $"{resetLink}?token={WebUtility.UrlEncode(token)}";
 
@@ -97,14 +157,20 @@ namespace IncidentManagementSystem.Services
             smtpClient.Send(message);
         }
 
-        public User CheckTokenValidity(string token)
+        public async Task AddTokenAsync(string email, string token, DateTime tokenExpiry)
         {
-            return _userRepository.CheckTokenValidity(token);
+            await _userRepository.AddTokenAsync(email, token, tokenExpiry);
         }
 
-        public void ResetPassword(string token, string password)
+        public async Task<User> CheckTokenValidityAsync(string token)
         {
-            _userRepository.ResetPassword(token, HashPassword(password));
+            return await _userRepository.CheckTokenValidityAsync(token);
         }
+
+        public async Task ResetPasswordAsync(string token, string password)
+        {
+            await _userRepository.ResetPasswordAsync(token, HashPassword(password));
+        }
+
     }
 }

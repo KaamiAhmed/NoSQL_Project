@@ -4,12 +4,28 @@ namespace IncidentManagementSystem.Services.Interfaces
 {
     public interface IUserService
     {
-        List<User> GetAll();
-        void Add(User user);
-        User? GetUserByLogin(string userName, string password, Role role);
-        User EmailAddressExists(string emailAddress);
-        void ForgotPassword(string email, string resetLink);
-        User CheckTokenValidity(string token);
-        void ResetPassword(string token, string password);
+
+        User? GetLoggedInUser();
+
+       
+        Task<User> GetByIdAsync(string id);
+        Task<List<User>> GetAllUsersAsync();
+        Task<List<string>> GetDistinctBranchesAsync();
+        Task AddUserAsync(User user);
+        Task<User> GetUserByLoginAsync(string userName, string password, Role role);
+        Task<bool> EmailAddressExistsAsync(string emailAddress);
+        Task<User> UserNameExistsAsync(string userName);
+        Task ForgotPasswordAsync(string email, string resetLink);
+        Task AddTokenAsync(string email, string token, DateTime tokenExpiry);
+        Task<User> CheckTokenValidityAsync(string token);
+        Task ResetPasswordAsync(string token, string password);
+        
+        Task UpdateUserAsync(string id, User updatedUser);
+
+        
+        Task DeleteUserAsync(string id);
+
+       
     }
+
 }

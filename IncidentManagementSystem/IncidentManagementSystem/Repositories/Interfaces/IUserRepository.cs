@@ -4,16 +4,18 @@ namespace IncidentManagementSystem.Repositories.Interfaces
 {
     public interface IUserRepository
     {
-        List<User> GetAll();
-        void Add(User user);
-        User? GetUserByLogin(string userName, string password, Role role);
-        User EmailAddressExists(string emailAddress);
-        void AddToken(string email, string token, DateTime tokenExpiry);
-        User CheckTokenValidity(string token);
-        void ResetPassword(string token, string password);
+        Task<User> GetUserByLoginAsync(string userName, string password, Role role);
+        Task<User> GetByIdAsync(string id);
 
-        // User? GetById(string id);
-        // void Update(User user);
-        // void Delete(string id);
+        Task<List<User>> GetAllUsersAsync();
+        Task<bool> EmailAddressExistsAsync(string emailAddress);
+        Task<User> UserNameExistsAsync(string userName);
+        Task AddUserAsync(User user);
+        Task UpdateUserAsync(string id, User updatedUser);
+        Task DeleteUserAsync(string id);
+        Task<List<string>> GetDistinctBranchesAsync();
+        Task AddTokenAsync(string email, string token, DateTime tokenExpiry);
+        Task<User> CheckTokenValidityAsync(string token);
+        Task ResetPasswordAsync(string token, string password);
     }
 }
