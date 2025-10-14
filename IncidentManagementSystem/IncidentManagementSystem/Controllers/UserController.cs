@@ -2,6 +2,7 @@
 using IncidentManagementSystem.Models;
 using IncidentManagementSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace IncidentManagementSystem.Controllers
 {
@@ -17,9 +18,9 @@ namespace IncidentManagementSystem.Controllers
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Index()
         {
+
             User? loggedInUser = _userService.GetLoggedInUser();
             ViewData["LoggedInUser"] = loggedInUser;
-
             var users = await _userService.GetAllUsersAsync();
             return View(users);
         }
@@ -31,6 +32,7 @@ namespace IncidentManagementSystem.Controllers
         //    _userService.Add(user);
         //    return RedirectToAction("Index");
         //}
+
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Create()
         {
@@ -50,24 +52,32 @@ namespace IncidentManagementSystem.Controllers
 
             try
             {
-                await _userService.AddUserAsync(user);
+                await _userService.AddUserAsync(user); 
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
+              
                 ViewBag.Error = ex.Message;
                 ViewBag.Branches = await _userService.GetDistinctBranchesAsync();
                 return View(user);
             }
         }
 
+        //[HttpPost]
+        //public IActionResult Create(string name, string email)
+        //{
+        //    var user = new User { Name = name, Email = email };
+        //    _userService.Add(user);
+        //    return RedirectToAction("Index");
+        //}
+
+
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Edit(string id)
         {
-            if (string.IsNullOrWhiteSpace(id))
-                return RedirectToAction("Index");
-
             var user = await _userService.GetByIdAsync(id);
+
             if (user == null) return RedirectToAction("Index");
 
             if (user.Name == null) user.Name = new Name();
@@ -78,12 +88,6 @@ namespace IncidentManagementSystem.Controllers
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Edit(string id, User updatedUser)
         {
-            if (!ModelState.IsValid)
-            {
-                if (updatedUser.Name == null) updatedUser.Name = new Name();
-                return View(updatedUser);
-            }
-
             await _userService.UpdateUserAsync(id, updatedUser);
             return RedirectToAction("Index");
         }
@@ -91,9 +95,6 @@ namespace IncidentManagementSystem.Controllers
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Delete(string id)
         {
-            if (string.IsNullOrWhiteSpace(id))
-                return RedirectToAction("Index");
-
             var user = await _userService.GetByIdAsync(id);
             if (user == null) return RedirectToAction("Index");
             return View(user);
@@ -106,5 +107,6 @@ namespace IncidentManagementSystem.Controllers
             await _userService.DeleteUserAsync(id);
             return RedirectToAction("Index");
         }
+
     }
 }
