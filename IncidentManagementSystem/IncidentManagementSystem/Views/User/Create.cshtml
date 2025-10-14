@@ -2,7 +2,10 @@
 @{
     ViewData["Title"] = "Create User";
 }
-
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
 <h2>Create User</h2>
 
 <form asp-action="Create" method="post">
@@ -12,8 +15,13 @@
     </div>
 
     <div>
-        <label>Name</label>
-        <input name="Name" />
+        <label>First Name</label>
+        <input name="Name.FirstName" />
+    </div>
+
+    <div>
+        <label>Last Name</label>
+        <input name="Name.LastName" />
     </div>
 
     <div>
@@ -32,6 +40,16 @@
             @foreach (var r in Enum.GetValues(typeof(Role)))
             {
                 <option value="@r">@r</option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <label>Branch</label>
+        <select name="Branch">
+            @foreach (Branch b in Enum.GetValues(typeof(Branch)))
+            {
+                <option value="@b">@b</option>
             }
         </select>
     </div>

@@ -5,9 +5,11 @@ namespace IncidentManagementSystem.Services.Interfaces
     public interface IUserService
     {
         Task<List<User>> GetAllUsersAsync();
+        Task<List<string>> GetDistinctBranchesAsync();
         Task AddUserAsync(User user);
         Task<User> GetUserByLoginAsync(string userName, string password, Role role);
         Task<bool> EmailAddressExistsAsync(string emailAddress);
+        Task<User> UserNameExists(string userName);
         Task ForgotPasswordAsync(string email, string resetLink);
         Task<User> CheckTokenValidityAsync(string token);
         Task ResetPasswordAsync(string token, string password);

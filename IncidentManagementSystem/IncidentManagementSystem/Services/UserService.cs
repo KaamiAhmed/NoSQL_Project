@@ -35,8 +35,19 @@ namespace IncidentManagementSystem.Services
             return loggedInUser;
         }
 
+        public async Task<List<string>> GetDistinctBranchesAsync()
+        {
+            return await _userRepository.GetDistinctBranchesAsync();
+        }
+
         public async Task AddUserAsync(User user)
         {
+            // Uniqueness checks
+            if (await _userRepository.UserNameExistsAsync(user.UserName) != null)
+                throw new Exception("Username already exists.");
+
+            if (await _userRepository.EmailAddressExistsAsync(user.Email))
+                throw new Exception("Email address already exists.");
             user.Password = HashPassword(user.Password);
             await _userRepository.AddUserAsync(user);
         }
@@ -73,9 +84,9 @@ namespace IncidentManagementSystem.Services
             await _userRepository.DeleteUserAsync(id);
         }
 
-        public User? GetUserByLogin(string userName, string password, Role role)
+        public async Task<User> GetUserByLoginAsync(string userName, string password, Role role)
         {
-            return _userRepository.GetUserByLogin(userName, HashPassword(password), role);
+            return await _userRepository.GetUserByLoginAsync(userName, HashPassword(password), role);
         }
 
         private string HashPassword(string password)
@@ -89,10 +100,15 @@ namespace IncidentManagementSystem.Services
 
         public async Task<bool> EmailAddressExistsAsync(string emailAddress)
         {
-            return _userRepository.EmailAddressExists(emailAddress);
+            return await _userRepository.EmailAddressExistsAsync(emailAddress);
         }
 
-        public asynk Task ForgotPassword(string email, string resetLink)
+        public async Task<User> UserNameExists(string userName)
+        {
+            return await _userRepository.UserNameExistsAsync(userName);
+        }
+
+        public async Task ForgotPasswordAsync(string email, string resetLink)
         {
             if (!await _userRepository.EmailAddressExistsAsync(email))
             {
@@ -104,7 +120,7 @@ namespace IncidentManagementSystem.Services
             DateTime tokenExpiry = DateTime.UtcNow.AddMinutes(15);
 
             //save token in the database
-            await _userRepository.AddToken(email, token, tokenExpiry);
+            await _userRepository.AddTokenAsync(email, token, tokenExpiry);
 
             string resetUrl = $"{resetLink}?token={WebUtility.UrlEncode(token)}";
 
