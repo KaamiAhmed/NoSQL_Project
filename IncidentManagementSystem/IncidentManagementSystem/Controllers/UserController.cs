@@ -18,6 +18,7 @@ namespace IncidentManagementSystem.Controllers
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Index()
         {
+
             User? loggedInUser = _userService.GetLoggedInUser();
             ViewData["LoggedInUser"] = loggedInUser;
             var users = await _userService.GetAllUsersAsync();
@@ -33,23 +34,53 @@ namespace IncidentManagementSystem.Controllers
         //}
 
         [SessionAuthorize(Role.Admin)]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            ViewBag.Branches = await _userService.GetDistinctBranchesAsync();
+            return View(new User { Name = new Name() }); // ensure nested binding works
         }
 
         [HttpPost]
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Create(User user)
         {
-            await _userService.AddUserAsync(user);
-            return RedirectToAction("Index");
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Branches = await _userService.GetDistinctBranchesAsync();
+                return View(user);
+            }
+
+            try
+            {
+                await _userService.AddUserAsync(user); 
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+              
+                ViewBag.Error = ex.Message;
+                ViewBag.Branches = await _userService.GetDistinctBranchesAsync();
+                return View(user);
+            }
         }
+
+        //[HttpPost]
+        //public IActionResult Create(string name, string email)
+        //{
+        //    var user = new User { Name = name, Email = email };
+        //    _userService.Add(user);
+        //    return RedirectToAction("Index");
+        //}
+
 
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Edit(string id)
         {
             var user = await _userService.GetByIdAsync(id);
+
+            if (user == null) return RedirectToAction("Index");
+
+            if (user.Name == null) user.Name = new Name();
             return View(user);
         }
 
@@ -65,6 +96,7 @@ namespace IncidentManagementSystem.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             var user = await _userService.GetByIdAsync(id);
+            if (user == null) return RedirectToAction("Index");
             return View(user);
         }
 

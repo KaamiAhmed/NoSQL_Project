@@ -35,17 +35,28 @@ namespace IncidentManagementSystem.Services
             return loggedInUser;
         }
 
-        public async Task AddUserAsync(User user)
-        {
-            user.Password = HashPassword(user.Password);
-            await _userRepository.AddUserAsync(user);
-        }
-
         public async Task<User> GetByIdAsync(string id)
         {
             return await _userRepository.GetByIdAsync(id);
         }
 
+        public async Task<List<string>> GetDistinctBranchesAsync()
+        {
+            return await _userRepository.GetDistinctBranchesAsync();
+        }
+
+        public async Task AddUserAsync(User user)
+        {
+            // Uniqueness checks
+            if (await _userRepository.UserNameExistsAsync(user.UserName) != null)
+                throw new Exception("Username already exists.");
+
+            if (await _userRepository.EmailAddressExistsAsync(user.Email))
+                throw new Exception("Email address already exists.");
+            user.Password = HashPassword(user.Password);
+            await _userRepository.AddUserAsync(user);
+        }
+            
         public async Task<List<User>> GetAllUsersAsync()
         {
             return await _userRepository.GetAllUsersAsync();
@@ -65,6 +76,7 @@ namespace IncidentManagementSystem.Services
                     updatedUser.Password = existing.Password;
                 }
             }
+
             await _userRepository.UpdateUserAsync(id, updatedUser);
         }
 
@@ -90,6 +102,11 @@ namespace IncidentManagementSystem.Services
         public async Task<bool> EmailAddressExistsAsync(string emailAddress)
         {
             return await _userRepository.EmailAddressExistsAsync(emailAddress);
+        }
+
+        public async Task<User> UserNameExistsAsync(string userName)
+        {
+            return await _userRepository.UserNameExistsAsync(userName);
         }
 
         public async Task ForgotPasswordAsync(string email, string resetLink)
@@ -140,6 +157,11 @@ namespace IncidentManagementSystem.Services
             smtpClient.Send(message);
         }
 
+        public async Task AddTokenAsync(string email, string token, DateTime tokenExpiry)
+        {
+            await _userRepository.AddTokenAsync(email, token, tokenExpiry);
+        }
+
         public async Task<User> CheckTokenValidityAsync(string token)
         {
             return await _userRepository.CheckTokenValidityAsync(token);
@@ -149,5 +171,6 @@ namespace IncidentManagementSystem.Services
         {
             await _userRepository.ResetPasswordAsync(token, HashPassword(password));
         }
+
     }
 }

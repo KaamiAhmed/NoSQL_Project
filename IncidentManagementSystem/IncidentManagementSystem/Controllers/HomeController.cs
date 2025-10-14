@@ -89,7 +89,7 @@ namespace IncidentManagementSystem.Controllers
         public async Task<IActionResult> ResetPassword(string token)
         {
             User user = await _userService.CheckTokenValidityAsync(token);
-            if(user == null)
+            if (user == null)
             {
                 return Content("Invalid Request");
             }
@@ -101,7 +101,7 @@ namespace IncidentManagementSystem.Controllers
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel resetPasswordViewModel)
         {
             User user = await _userService.CheckTokenValidityAsync(resetPasswordViewModel.Token);
-            if(user == null)
+            if (user == null)
             {
                 return Content("Invalid Request");
             }
@@ -113,7 +113,7 @@ namespace IncidentManagementSystem.Controllers
             }
 
             //hash password and change it in db and unset the token and expiry fields
-            await _userService.ResetPasswordAsync(resetPasswordViewModel.Token, resetPasswordViewModel.NewPassword);
+            await _userService.ResetPasswordAsync(user.ResetPasswordViewModel.Token, resetPasswordViewModel.NewPassword);
 
             TempData["PasswordChanged"] = "Password updated successfully";
             return RedirectToAction("Login");
