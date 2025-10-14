@@ -1,8 +1,7 @@
 ﻿using IncidentManagementSystem.Models;
 using IncidentManagementSystem.Repositories.Interfaces;
 using MongoDB.Driver;
-using System.Security.Cryptography;
-using System.Text;
+
 namespace IncidentManagementSystem.Repositories
 {
     public class UserRepository : IUserRepository
@@ -19,9 +18,20 @@ namespace IncidentManagementSystem.Repositories
             return await _users.Find(u => u.UserName == userName && u.Password == password && u.Role == role).FirstOrDefaultAsync();
         }
 
-        public async Task<User> GetByIdAsync(string id)
+        public User? GetById(string id)
+        {
+            return _users.Find(u => u.Id == id).FirstOrDefault();
+        }
+
+        public async Task<User?> GetByIdAsync(string id)
         {
             return await _users.Find(u => u.Id == id).FirstOrDefaultAsync();
+        }
+
+        // ---------- Read ----------
+        public List<User> GetAllUsers()
+        {
+            return await _users.Find(_ => true).ToListAsync();
         }
 
         public async Task<List<User>> GetAllUsersAsync()
@@ -29,9 +39,28 @@ namespace IncidentManagementSystem.Repositories
             return await _users.Find(_ => true).ToListAsync();
         }
 
+        // ---------- Create ----------
+        public void AddUser(User user)
+        {
+            await _users.InsertOneAsync(user);
+        }
+
         public async Task AddUserAsync(User user)
         {
             await _users.InsertOneAsync(user);
+        }
+
+        // ---------- Update ----------
+        public void UpdateUser(string id, User updatedUser)
+        {
+            var filter = Builders<User>.Filter.Eq(u => u.Id, id);
+            var update = Builders<User>.Update
+                .Set(u => u.UserName, updatedUser.UserName)
+                .Set(u => u.Email, updatedUser.Email)
+                .Set(u => u.Password, updatedUser.Password)
+                .Set(u => u.Role, updatedUser.Role);
+
+            _users.UpdateOne(filter, update);
         }
 
         public async Task UpdateUserAsync(string id, User updatedUser)
@@ -46,14 +75,20 @@ namespace IncidentManagementSystem.Repositories
             await _users.UpdateOneAsync(filter, update);
         }
 
+        // ---------- Delete ----------
+        public void DeleteUser(string id)
+        {
+            _users.DeleteOne(u => u.Id == id);
+        }
+
         public async Task DeleteUserAsync(string id)
         {
             await _users.DeleteOneAsync(u => u.Id == id);
         }
 
+        // ---------- Existence checks ----------
         public async Task<bool> EmailAddressExistsAsync(string emailAddress)
         {
-            //long count = await _users.CountDocumentsAsync(Builders<User>.Filter.Eq(u => u.Email, emailAddress));
             return await _users.Find(u => u.Email == emailAddress).AnyAsync();
         }
 
@@ -79,6 +114,11 @@ namespace IncidentManagementSystem.Repositories
             var filter = Builders<User>.Filter.Eq(u => u.ResetPasswordViewModel.Token, token);
             var update = Builders<User>.Update.Set(u => u.Password, password).Unset(u => u.ResetPasswordViewModel);
             await _users.UpdateOneAsync(filter, update);
+        }
+
+        public async Task<List<string>> GetDistinctBranchesAsync()
+        {
+            return await _users.Distinct<string>("branch", FilterDefinition<User>.Empty).ToListAsync();
         }
 
         public async Task<List<string>> GetDistinctBranchesAsync()

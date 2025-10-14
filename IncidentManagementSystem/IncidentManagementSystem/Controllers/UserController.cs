@@ -2,7 +2,6 @@
 using IncidentManagementSystem.Models;
 using IncidentManagementSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 
 namespace IncidentManagementSystem.Controllers
 {
@@ -20,6 +19,7 @@ namespace IncidentManagementSystem.Controllers
         {
             User? loggedInUser = _userService.GetLoggedInUser();
             ViewData["LoggedInUser"] = loggedInUser;
+
             var users = await _userService.GetAllUsersAsync();
             return View(users);
         }
@@ -106,6 +106,5 @@ namespace IncidentManagementSystem.Controllers
             await _userService.DeleteUserAsync(id);
             return RedirectToAction("Index");
         }
-
     }
 }
