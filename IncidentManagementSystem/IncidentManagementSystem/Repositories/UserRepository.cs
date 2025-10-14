@@ -14,51 +14,23 @@ namespace IncidentManagementSystem.Repositories
             _users = db.GetCollection<User>("User");
         }
 
-        public User GetUserByLogin(string userName, string password, Role role)
+        public async Task<User> GetUserByLoginAsync(string userName, string password, Role role)
         {
-            return _users.Find(u => u.UserName == userName && u.Password == password && u.Role == role).FirstOrDefault();
+            return await _users.Find(u => u.UserName == userName && u.Password == password && u.Role == role).FirstOrDefaultAsync();
         }
-        public User? GetById(string id)
-        {
-            return _users.Find(u => u.Id == id).FirstOrDefault();
-        }
-
-<<<<<<< HEAD
-        public List<User> GetAllUsers()
-=======
         public async Task<User> GetByIdAsync(string id)
         {
             return await _users.Find(u => u.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<List<User>> GetAllUsersAsync()
->>>>>>> 8269353a06638412e9570e569dd161708457849b
         {
-            return _users.Find(_ => true).ToList();
+            return await _users.Find(_ => true).ToListAsync();
         }
 
-<<<<<<< HEAD
-        public void AddUser(User user)
-=======
         public async Task AddUserAsync(User user)
->>>>>>> 8269353a06638412e9570e569dd161708457849b
         {
-            _users.InsertOne(user);
-        }
-        public void UpdateUser(string id, User updatedUser)
-        {
-            var filter = Builders<User>.Filter.Eq(u => u.Id, id);
-            var update = Builders<User>.Update
-                .Set(u => u.UserName, updatedUser.UserName)
-                .Set(u => u.Email, updatedUser.Email)
-                .Set(u => u.Password, updatedUser.Password)
-                .Set(u => u.Role, updatedUser.Role);
-
-            _users.UpdateOne(filter, update);
-        }
-        public void DeleteUser(string id)
-        {
-            _users.DeleteOne(u => u.Id == id);
+            await _users.InsertOneAsync(user);
         }
 
         public async Task UpdateUserAsync(string id, User updatedUser)
@@ -83,36 +55,34 @@ namespace IncidentManagementSystem.Repositories
             //long count = await _users.CountDocumentsAsync(Builders<User>.Filter.Eq(u => u.Email, emailAddress));
             return await _users.Find(u => u.Email == emailAddress).AnyAsync();
         }
-        public User? UserNameExists(string userName)
+
+        public async Task<User> UserNameExistsAsync(string userName)
         {
-            return _users.Find(u => u.UserName == userName).FirstOrDefault();
+            return await _users.Find(u => u.UserName == userName).FirstOrDefaultAsync();
         }
 
-
-
-        public void AddToken(string email, string token, DateTime tokenExpiry)
+        public async Task AddTokenAsync(string email, string token, DateTime tokenExpiry)
         {
             var filter = Builders<User>.Filter.Eq(u => u.Email, email);
             var update = Builders<User>.Update.Set(u => u.ResetPasswordViewModel.Token, token).Set(u => u.ResetPasswordViewModel.TokenExpiry, tokenExpiry);
-            _users.UpdateOne(filter, update);
+            await _users.UpdateOneAsync(filter, update);
         }
 
-        public User CheckTokenValidity(string token)
+        public async Task<User> CheckTokenValidityAsync(string token)
         {
-            return _users.Find(user => user.ResetPasswordViewModel.Token == token && user.ResetPasswordViewModel.TokenExpiry > DateTime.UtcNow).FirstOrDefault();
+            return await _users.Find(user => user.ResetPasswordViewModel.Token == token && user.ResetPasswordViewModel.TokenExpiry > DateTime.UtcNow).FirstOrDefaultAsync();
         }
 
-        public void ResetPassword(string token, string password)
+        public async Task ResetPasswordAsync(string token, string password)
         {
             var filter = Builders<User>.Filter.Eq(u => u.ResetPasswordViewModel.Token, token);
             var update = Builders<User>.Update.Set(u => u.Password, password).Unset(u => u.ResetPasswordViewModel);
-            _users.UpdateOne(filter, update);
+            await _users.UpdateOneAsync(filter, update);
         }
 
-        public List<string> GetDistinctBranches()
+        public async Task<List<string>> GetDistinctBranchesAsync()
         {
-            // Uses Mongo distinct on the "branch" field
-            return _users.Distinct<string>("branch", FilterDefinition<User>.Empty).ToList();
+            return await _users.Distinct<string>("branch", FilterDefinition<User>.Empty).ToListAsync();
         }
 
     }

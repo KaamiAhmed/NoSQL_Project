@@ -22,32 +22,6 @@ namespace IncidentManagementSystem.Services
             _contextAccessor = contextAccessor;
         }
 
-<<<<<<< HEAD
-       public List<User> GetAllUsers()
-        {
-            return _userRepository.GetAllUsers();
-        }
-
-        public User GetById(string id)
-        {
-            return _userRepository.GetById(id);
-        }
-        public List<string> GetDistinctBranches() => _userRepository.GetDistinctBranches();
-
-        public void AddUser(User user)
-        {
-            if (_userRepository.UserNameExists(user.UserName) != null)
-                throw new Exception("username already exists.");
-
-            if (_userRepository.EmailAddressExists(user.Email) != null)
-                throw new Exception("Emailaddress already exists.");
-
-            user.Password = HashPassword(user.Password);
-            _userRepository.AddUser(user);
-        }
-
-        public void UpdateUser(string id, User updatedUser)
-=======
         public User? GetLoggedInUser()
         {
             User? loggedInUser = null;
@@ -61,24 +35,34 @@ namespace IncidentManagementSystem.Services
             return loggedInUser;
         }
 
-        public async Task AddUserAsync(User user)
-        {
-            user.Password = HashPassword(user.Password);
-            await _userRepository.AddUserAsync(user);
-        }
-
         public async Task<User> GetByIdAsync(string id)
         {
             return await _userRepository.GetByIdAsync(id);
         }
 
+        public async Task<List<string>> GetDistinctBranchesAsync()
+        {
+            return await _userRepository.GetDistinctBranchesAsync();
+        }
+
+        public async Task AddUserAsync(User user)
+        {
+            // Uniqueness checks
+            if (await _userRepository.UserNameExistsAsync(user.UserName) != null)
+                throw new Exception("Username already exists.");
+
+            if (await _userRepository.EmailAddressExistsAsync(user.Email))
+                throw new Exception("Email address already exists.");
+            user.Password = HashPassword(user.Password);
+            await _userRepository.AddUserAsync(user);
+        }
+            
         public async Task<List<User>> GetAllUsersAsync()
         {
             return await _userRepository.GetAllUsersAsync();
         }
 
         public async Task UpdateUserAsync(string id, User updatedUser)
->>>>>>> 8269353a06638412e9570e569dd161708457849b
         {
             if (!string.IsNullOrWhiteSpace(updatedUser.Password))
             {
@@ -86,35 +70,24 @@ namespace IncidentManagementSystem.Services
             }
             else
             {
-<<<<<<< HEAD
-                var existing = _userRepository.GetById(id);
-=======
                 var existing = await _userRepository.GetByIdAsync(id);
->>>>>>> 8269353a06638412e9570e569dd161708457849b
                 if (existing != null)
                 {
                     updatedUser.Password = existing.Password;
                 }
             }
-<<<<<<< HEAD
-            _userRepository.UpdateUser(id, updatedUser);
-        }
-        public void DeleteUser(string id)
-        {
-            _userRepository.DeleteUser(id);
-=======
+
             await _userRepository.UpdateUserAsync(id, updatedUser);
         }
 
         public async Task DeleteUserAsync(string id)
         {
             await _userRepository.DeleteUserAsync(id);
->>>>>>> 8269353a06638412e9570e569dd161708457849b
         }
 
-        public User? GetUserByLogin(string userName, string password, Role role)
+        public async Task<User> GetUserByLoginAsync(string userName, string password, Role role)
         {
-            return _userRepository.GetUserByLogin(userName, HashPassword(password), role);
+            return await _userRepository.GetUserByLoginAsync(userName, HashPassword(password), role);
         }
 
         private string HashPassword(string password)
@@ -128,14 +101,15 @@ namespace IncidentManagementSystem.Services
 
         public async Task<bool> EmailAddressExistsAsync(string emailAddress)
         {
-            return _userRepository.EmailAddressExists(emailAddress);
-        }
-        public User UserNameExists(string emailAddress)
-        {
-            return _userRepository.EmailAddressExists(emailAddress);
+            return await _userRepository.EmailAddressExistsAsync(emailAddress);
         }
 
-        public asynk Task ForgotPassword(string email, string resetLink)
+        public async Task<User> UserNameExistsAsync(string userName)
+        {
+            return await _userRepository.UserNameExistsAsync(userName);
+        }
+
+        public async Task ForgotPasswordAsync(string email, string resetLink)
         {
             if (!await _userRepository.EmailAddressExistsAsync(email))
             {
@@ -147,7 +121,7 @@ namespace IncidentManagementSystem.Services
             DateTime tokenExpiry = DateTime.UtcNow.AddMinutes(15);
 
             //save token in the database
-            await _userRepository.AddToken(email, token, tokenExpiry);
+            await _userRepository.AddTokenAsync(email, token, tokenExpiry);
 
             string resetUrl = $"{resetLink}?token={WebUtility.UrlEncode(token)}";
 
@@ -181,6 +155,11 @@ namespace IncidentManagementSystem.Services
             smtpClient.Credentials = new NetworkCredential(fromEmailAddress.Address, password);
 
             smtpClient.Send(message);
+        }
+
+        public async Task AddTokenAsync(string email, string token, DateTime tokenExpiry)
+        {
+            await _userRepository.AddTokenAsync(email, token, tokenExpiry);
         }
 
         public async Task<User> CheckTokenValidityAsync(string token)
