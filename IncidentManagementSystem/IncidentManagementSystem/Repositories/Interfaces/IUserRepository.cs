@@ -7,37 +7,19 @@ namespace IncidentManagementSystem.Repositories.Interfaces
 {
     public interface IUserRepository
     {
-        // -------- Auth / lookups --------
-        User? GetUserByLogin(string userName, string password, Role role);
+        
+        Task<User> GetUserByLoginAsync(string userName, string password, Role role);
+        Task<User> GetByIdAsync(string id);
 
-        // -------- Read --------
-        User? GetById(string id);
-        Task<User?> GetByIdAsync(string id);
-
-        List<User> GetAllUsers();
         Task<List<User>> GetAllUsersAsync();
-
-        Task<List<string>> GetDistinctBranchesAsync();
-
-        // -------- Create --------
-        void AddUser(User user);
+        Task<User> UserNameExistsAsync(string userName);
         Task AddUserAsync(User user);
-
-        // -------- Update --------
-        void UpdateUser(string id, User updatedUser);
         Task UpdateUserAsync(string id, User updatedUser);
-
-        // -------- Delete --------
-        void DeleteUser(string id);
         Task DeleteUserAsync(string id);
+        Task<List<string>> GetDistinctBranchesAsync();
+        Task ForgotPasswordAsync(string email, string resetLink);
+        Task<User> CheckTokenValidityAsync(string token);
+        Task ResetPasswordAsync(string token, string password);
 
-        // -------- Existence checks --------
-        Task<bool> EmailAddressExistsAsync(string emailAddress);
-        User? UserNameExists(string userName);
-
-        // -------- Password reset token flow (sync in repo; async wrappers in service) --------
-        void AddToken(string email, string token, DateTime tokenExpiry);
-        User? CheckTokenValidity(string token);
-        void ResetPassword(string token, string password);
     }
 }

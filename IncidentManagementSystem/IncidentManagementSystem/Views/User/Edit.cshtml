@@ -46,22 +46,22 @@
         </select>
     </div>
 
-    <div>
-        <label>Branch</label>
-        <select name="Branch">
-            @foreach (Branch b in Enum.GetValues(typeof(Branch)))
-            {
-                if (b == Model.Branch)
-                {
-                    <option value="@b" selected>@b</option>
-                }
-                else
-                {
-                    <option value="@b">@b</option>
-                }
-            }
-        </select>
-    </div>
+    @* <div> *@
+    @*     <label>Branch</label> *@
+    @*     <select name="Branch"> *@
+    @*         @foreach (Branch b in Enum.GetValues(typeof(Branch))) *@
+    @*         { *@
+    @*             if (b == Model.Branch) *@
+    @*             { *@
+    @*                 <option value="@b" selected>@b</option> *@
+    @*             } *@
+    @*             else *@
+    @*             { *@
+    @*                 <option value="@b">@b</option> *@
+    @*             } *@
+    @*         } *@
+    @*     </select> *@
+    @* </div> *@
 
     <button type="submit">Save</button>
     <a asp-action="Index">Cancel</a>

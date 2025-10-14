@@ -2,12 +2,10 @@
 @{
     ViewData["Title"] = "Create User";
 }
-
 @if (ViewBag.Error != null)
 {
     <div class="alert alert-danger">@ViewBag.Error</div>
 }
-
 <h2>Create User</h2>
 
 <form asp-action="Create" method="post">

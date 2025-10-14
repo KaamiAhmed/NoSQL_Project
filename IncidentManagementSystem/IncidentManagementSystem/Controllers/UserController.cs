@@ -24,10 +24,17 @@ namespace IncidentManagementSystem.Controllers
             return View(users);
         }
 
+        //[HttpPost]
+        //public IActionResult Create(string name, string email)
+        //{
+        //    var user = new User { Name = name, Email = email };
+        //    _userService.Add(user);
+        //    return RedirectToAction("Index");
+        //}
         [SessionAuthorize(Role.Admin)]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewBag.Branches = _userService.GetDistinctBranches();
+            ViewBag.Branches = await _userService.GetDistinctBranchesAsync();
             return View(new User { Name = new Name() }); // ensure nested binding works
         }
 
@@ -37,7 +44,7 @@ namespace IncidentManagementSystem.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.Branches = _userService.GetDistinctBranches();
+                ViewBag.Branches = await _userService.GetDistinctBranchesAsync();
                 return View(user);
             }
 
@@ -49,7 +56,7 @@ namespace IncidentManagementSystem.Controllers
             catch (Exception ex)
             {
                 ViewBag.Error = ex.Message;
-                ViewBag.Branches = _userService.GetDistinctBranches();
+                ViewBag.Branches = await _userService.GetDistinctBranchesAsync();
                 return View(user);
             }
         }
@@ -63,7 +70,7 @@ namespace IncidentManagementSystem.Controllers
             var user = await _userService.GetByIdAsync(id);
             if (user == null) return RedirectToAction("Index");
 
-            if (user.Name == null) user.Name = new Name(); // ensure nested binding works
+            if (user.Name == null) user.Name = new Name();
             return View(user);
         }
 
@@ -89,7 +96,6 @@ namespace IncidentManagementSystem.Controllers
 
             var user = await _userService.GetByIdAsync(id);
             if (user == null) return RedirectToAction("Index");
-
             return View(user);
         }
 

@@ -34,31 +34,29 @@ namespace IncidentManagementSystem.Services
             return await _userRepository.GetByIdAsync(id);
         }
 
+        public async Task<List<string>> GetDistinctBranchesAsync()
+        {
+            return await _userRepository.GetDistinctBranchesAsync();
+        }
+
+        public async Task AddUserAsync(User user)
+        {
+            // Uniqueness checks
+            if (await _userRepository.UserNameExistsAsync(user.UserName) != null)
+                throw new Exception("Username already exists.");
+
+            if (await _userRepository.EmailAddressExistsAsync(user.Email))
+                throw new Exception("Email address already exists.");
+            user.Password = HashPassword(user.Password);
+            await _userRepository.AddUserAsync(user);
+        }
+            
         public async Task<List<User>> GetAllUsersAsync()
         {
             return await _userRepository.GetAllUsersAsync();
         }
 
-        public List<string> GetDistinctBranches()
-        {
-            return _userRepository.GetDistinctBranches();
-        }
-
-        // ---------------- Create ----------------
-        public async Task AddUserAsync(User user)
-        {
-            // Uniqueness checks
-            if (_userRepository.UserNameExists(user.UserName) != null)
-                throw new Exception("Username already exists.");
-
-            if (await _userRepository.EmailAddressExistsAsync(user.Email))
-                throw new Exception("Email address already exists.");
-
-            user.Password = HashPassword(user.Password);
-            await _userRepository.AddUserAsync(user);
-        }
-
-        // ---------------- Update ----------------
+       
         public async Task UpdateUserAsync(string id, User updatedUser)
         {
             if (!string.IsNullOrWhiteSpace(updatedUser.Password))
@@ -84,10 +82,9 @@ namespace IncidentManagementSystem.Services
             await _userRepository.DeleteUserAsync(id);
         }
 
-        // ---------------- Auth ----------------
-        public User? GetUserByLogin(string userName, string password, Role role)
+        public async Task<User> GetUserByLoginAsync(string userName, string password, Role role)
         {
-            return _userRepository.GetUserByLogin(userName, HashPassword(password), role);
+            return await _userRepository.GetUserByLoginAsync(userName, HashPassword(password), role);
         }
 
         private string HashPassword(string password)
@@ -103,13 +100,12 @@ namespace IncidentManagementSystem.Services
             return await _userRepository.EmailAddressExistsAsync(emailAddress);
         }
 
-        public User? UserNameExists(string userName)
+        public async Task<User> UserNameExists(string userName)
         {
-            return _userRepository.UserNameExists(userName);
+            return await _userRepository.UserNameExistsAsync(userName);
         }
 
-        // ---------------- Password reset flow ----------------
-        public async Task ForgotPassword(string email, string resetLink)
+        public async Task ForgotPasswordAsync(string email, string resetLink)
         {
             if (!await _userRepository.EmailAddressExistsAsync(email))
                 throw new Exception("Email address not found.");
@@ -118,8 +114,8 @@ namespace IncidentManagementSystem.Services
             string token = Guid.NewGuid().ToString();
             DateTime tokenExpiry = DateTime.UtcNow.AddMinutes(15);
 
-            // Save token (repository has sync method; that’s fine here)
-            _userRepository.AddToken(email, token, tokenExpiry);
+            //save token in the database
+            await _userRepository.AddTokenAsync(email, token, tokenExpiry);
 
             string resetUrl = $"{resetLink}?token={WebUtility.UrlEncode(token)}";
 
