@@ -129,15 +129,6 @@ namespace IncidentManagementSystem.Repositories
             _users.UpdateOne(filter, update);
         }
 
-        // ---------- Branches ----------
-        public List<string> GetDistinctBranches()
-        {
-            // NOTE: if your BSON field name differs (e.g., "Branch" vs "branch"),
-            // adjust the field name to match your serialization config.
-            return _users.Distinct<string>("branch", FilterDefinition<User>.Empty).ToList();
-        }
-
-        // Optional async variant if you need it later:
         public async Task<List<string>> GetDistinctBranchesAsync()
         {
             return await _users.Distinct<string>("branch", FilterDefinition<User>.Empty).ToListAsync();
