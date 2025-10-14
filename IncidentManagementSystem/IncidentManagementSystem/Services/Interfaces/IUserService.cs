@@ -11,8 +11,12 @@ namespace IncidentManagementSystem.Services.Interfaces
         void DeleteUser(string id);
         User? GetUserByLogin(string userName, string password, Role role);
         User EmailAddressExists(string emailAddress);
+        User UserNameExists(string userName);
         void ForgotPassword(string email, string resetLink);
         User CheckTokenValidity(string token);
         void ResetPassword(string token, string password);
+        List<string> GetDistinctBranches();
+
     }
+
 }

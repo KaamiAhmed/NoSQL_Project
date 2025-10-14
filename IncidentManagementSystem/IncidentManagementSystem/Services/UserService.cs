@@ -28,9 +28,16 @@ namespace IncidentManagementSystem.Services
         {
             return _userRepository.GetById(id);
         }
+        public List<string> GetDistinctBranches() => _userRepository.GetDistinctBranches();
 
         public void AddUser(User user)
         {
+            if (_userRepository.UserNameExists(user.UserName) != null)
+                throw new Exception("username already exists.");
+
+            if (_userRepository.EmailAddressExists(user.Email) != null)
+                throw new Exception("Emailaddress already exists.");
+
             user.Password = HashPassword(user.Password);
             _userRepository.AddUser(user);
         }
@@ -71,6 +78,10 @@ namespace IncidentManagementSystem.Services
         }
 
         public User EmailAddressExists(string emailAddress)
+        {
+            return _userRepository.EmailAddressExists(emailAddress);
+        }
+        public User UserNameExists(string emailAddress)
         {
             return _userRepository.EmailAddressExists(emailAddress);
         }
@@ -133,5 +144,6 @@ namespace IncidentManagementSystem.Services
         {
             _userRepository.ResetPassword(token, HashPassword(password));
         }
+
     }
 }

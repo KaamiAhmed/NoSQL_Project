@@ -52,6 +52,12 @@ namespace IncidentManagementSystem.Repositories
         {
             return _users.Find(u => u.Email == emailAddress).FirstOrDefault();
         }
+        public User? UserNameExists(string userName)
+        {
+            return _users.Find(u => u.UserName == userName).FirstOrDefault();
+        }
+
+
 
         public void AddToken(string email, string token, DateTime tokenExpiry)
         {
@@ -71,5 +77,12 @@ namespace IncidentManagementSystem.Repositories
             var update = Builders<User>.Update.Set(u => u.Password, password).Unset(u => u.ResetPasswordViewModel);
             _users.UpdateOne(filter, update);
         }
+
+        public List<string> GetDistinctBranches()
+        {
+            // Uses Mongo distinct on the "branch" field
+            return _users.Distinct<string>("branch", FilterDefinition<User>.Empty).ToList();
+        }
+
     }
 }

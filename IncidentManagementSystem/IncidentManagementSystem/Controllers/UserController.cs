@@ -17,27 +17,42 @@ namespace IncidentManagementSystem.Controllers
 
         [SessionAuthorize(Role.ServiceDeskEmployee, Role.Admin)]
         public IActionResult Index()
-        {   
+        {
             var users = _userService.GetAllUsers();
             return View(users);
         }
         [SessionAuthorize(Role.Admin)]
         public IActionResult Create()
         {
-            return View();
+            ViewBag.Branches = _userService.GetDistinctBranches();
+            return View(new User { Name = new Name() }); // ensure nested binding works
         }
+
         [HttpPost]
         [SessionAuthorize(Role.Admin)]
         public IActionResult Create(User user)
         {
-            _userService.AddUser(user);
-            return RedirectToAction("Index");
+            try
+            {
+                _userService.AddUser(user); 
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+              
+                ViewBag.Error = ex.Message;
+                return View(user);
+            }
         }
+
 
         [SessionAuthorize(Role.Admin)]
         public IActionResult Edit(string id)
         {
             var user = _userService.GetById(id);
+            if (user == null) return RedirectToAction("Index");
+
+            if (user.Name == null) user.Name = new Name(); // so nested binding works
             return View(user);
         }
 

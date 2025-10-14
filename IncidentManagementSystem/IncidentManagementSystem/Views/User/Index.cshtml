@@ -6,13 +6,17 @@
     <a class="btn btn-primary" asp-action="Create">Create New User</a>
 </p>
 
-<table class="table table-striped">
+<table class="table table-striped table-hover align-middle">
     <thead>
         <tr>
             <th>UserName</th>
             <th>Name</th>
             <th>Email</th>
+            <th>Role</th>
+            <th>Branch</th>
             <th>Actions</th>
+            <th>Id(test)</th>
+
         </tr>
     </thead>
     <tbody>
@@ -20,13 +24,22 @@
         {
             <tr>
                 <td>@user.UserName</td>
-                <td>@user.Name</td>
+
+                <td>
+                    @((user.Name?.FirstName ?? "") +
+                        (string.IsNullOrWhiteSpace(user.Name?.LastName) ? "" : " " + user.Name.LastName))
+                </td>
+
                 <td>@user.Email</td>
+                <td>@user.Role</td>
+                <td>@user.Branch</td>
+
                 <td>
                     <a class="btn btn-info btn-sm" asp-action="Edit" asp-route-id="@user.Id">Edit</a>
                     <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@user.Id">Delete</a>
-                    <a class="btn btn-secondary btn-sm" asp-action="Details" asp-route-id="@user.Id">Details</a>
                 </td>
+                <td>@user.Id</td>
+
             </tr>
         }
     </tbody>
