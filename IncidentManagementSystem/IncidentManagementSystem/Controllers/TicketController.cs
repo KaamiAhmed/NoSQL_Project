@@ -39,11 +39,65 @@ namespace IncidentManagementSystem.Controllers
             List<Ticket> myTickets = new List<Ticket>();
             if (loggedInUser != null)
             {
-                myTickets = await _ticketService.GetTicketsByUserAsync(loggedInUser.Id);
+                if (loggedInUser.Role == Role.ServiceDeskEmployee)
+                {
+                    myTickets = await _ticketService.GetAllIncidentsAsync();
+                }
+                else
+                {
+                    myTickets = await _ticketService.GetTicketsByUserAsync(loggedInUser.Id);
+                }
+                ViewData["LoggedInUser"] = loggedInUser;
+                ViewBag.UserRole = loggedInUser.Role.ToString();
+            }
+            return View(myTickets);
+        }
+
+
+
+        [SessionAuthorize(Role.ServiceDeskEmployee)]
+        public async Task<IActionResult> GetAllIncidents()
+        {
+            User? loggedInUser = _userService.GetLoggedInUser();
+            ViewBag.UserRole = loggedInUser.Role.ToString();
+            var allTickets = await _ticketService.GetAllIncidentsAsync();
+            return View("GetMyTickets", allTickets);
+        }
+
+        [SessionAuthorize(Role.ServiceDeskEmployee)]
+        [HttpGet]
+        public IActionResult CreateIncident()
+        {
+            return View();
+        }
+
+        [SessionAuthorize(Role.ServiceDeskEmployee)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateIncident(Ticket model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            model.Status = Status.Open;
+            model.DateOfEvent = DateTime.UtcNow;
+
+            switch (model.Priority)
+            {
+                case Priority.High:
+                    model.Deadline = 7;
+                    break;
+                case Priority.Normal:
+                    model.Deadline = 14;
+                    break;
+                case Priority.Low:
+                    model.Deadline = 21;
+                    break;
             }
 
-            ViewData["LoggedInUser"] = loggedInUser;
-            return View(myTickets);
+            await _ticketService.AddIncidentAsync(model);
+            TempData["SuccessMessage"] = "Incident created successfully!";
+            return RedirectToAction("GetMyTickets", "Ticket");
         }
     }
 }

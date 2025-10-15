@@ -9,5 +9,12 @@ namespace IncidentManagementSystem.Services.Interfaces
         Task<long> GetOpenTicketsAsync(string id, Status status);
         Task<long> GetResolvedTicketsAsync(string id, Status status);
         Task<long> GetClosedTicketsAsync(string id, Status status);
+
+        //Service Desk 
+        Task<List<Ticket>> GetAllIncidentsAsync();
+        Task<Ticket?> GetIncidentByIdAsync(string id);
+        Task AddIncidentAsync(Ticket ticket);
+        Task UpdateIncidentAsync(Ticket ticket);
+        Task UpdateIncidentStatusAsync(string id, Status status);
     }
 }
