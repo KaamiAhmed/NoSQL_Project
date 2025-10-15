@@ -27,6 +27,9 @@ namespace IncidentManagementSystem.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public string? ReportedBy { get; set; }
 
+        [BsonIgnore]
+        public string ReportedByName { get; set; } = "";
+
         [BsonElement("status")]
         [BsonRepresentation(BsonType.String)]
         public Status Status { get; set; }
