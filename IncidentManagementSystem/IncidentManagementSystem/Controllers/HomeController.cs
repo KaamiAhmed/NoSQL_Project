@@ -33,18 +33,25 @@ namespace IncidentManagementSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(Login login)
         {
-
-            User user = await _userService.GetUserByLoginAsync(login.UserName, login.Password, login.Role);
-            if (user == null)
+            try
             {
-                ViewBag.ErrorMessage = "Wrong credentials";
-                return View(login);
+                User user = await _userService.GetUserByLoginAsync(login.UserName, login.Password, login.Role);
+                if (user == null)
+                {
+                    ViewBag.ErrorMessage = "Wrong credentials";
+                    return View(login);
+                }
+                else
+                {
+                    string jsonUser = JsonSerializer.Serialize(user);
+                    HttpContext.Session.SetString("LoggedInUser", jsonUser);
+                    return RedirectToAction("TicketOverview", "Ticket");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                string jsonUser = JsonSerializer.Serialize(user);
-                HttpContext.Session.SetString("LoggedInUser", jsonUser);
-                return RedirectToAction("TicketOverview", "Ticket");
+                ViewBag.Error = ex.Message;
+                return View(login);
             }
         }
 

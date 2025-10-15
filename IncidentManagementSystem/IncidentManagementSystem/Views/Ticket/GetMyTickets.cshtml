@@ -9,6 +9,10 @@
 
 	<div style="width:80%">
 		<h1 class="ms-2 mt-1 mb-3">My Tickets</h1>
+		@* @if (@ViewBag.NoTickets != null)
+		{
+			<div class="alert alert-info">@ViewBag.NoTickets</div>
+		} *@
 		@{
 			int count = 1;
 		}

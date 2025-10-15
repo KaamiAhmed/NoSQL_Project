@@ -99,11 +99,6 @@ namespace IncidentManagementSystem.Services
             }
         }
 
-        public async Task<bool> EmailAddressExistsAsync(string emailAddress)
-        {
-            return await _userRepository.EmailAddressExistsAsync(emailAddress);
-        }
-
         public async Task<User> UserNameExistsAsync(string userName)
         {
             return await _userRepository.UserNameExistsAsync(userName);
@@ -155,11 +150,6 @@ namespace IncidentManagementSystem.Services
             smtpClient.Credentials = new NetworkCredential(fromEmailAddress.Address, password);
 
             smtpClient.Send(message);
-        }
-
-        public async Task AddTokenAsync(string email, string token, DateTime tokenExpiry)
-        {
-            await _userRepository.AddTokenAsync(email, token, tokenExpiry);
         }
 
         public async Task<User> CheckTokenValidityAsync(string token)

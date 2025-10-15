@@ -16,7 +16,14 @@ namespace IncidentManagementSystem.Repositories
 
         public async Task<User> GetUserByLoginAsync(string userName, string password, Role role)
         {
-            return await _users.Find(u => u.UserName == userName && u.Password == password && u.Role == role).FirstOrDefaultAsync();
+            try
+            {
+                return await _users.Find(u => u.UserName == userName && u.Password == password && u.Role == role).FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error fetching user.", ex);
+            }
         }
         public async Task<User> GetByIdAsync(string id)
         {
@@ -53,7 +60,14 @@ namespace IncidentManagementSystem.Repositories
         public async Task<bool> EmailAddressExistsAsync(string emailAddress)
         {
             //long count = await _users.CountDocumentsAsync(Builders<User>.Filter.Eq(u => u.Email, emailAddress));
-            return await _users.Find(u => u.Email == emailAddress).AnyAsync();
+            try
+            {
+                return await _users.Find(u => u.Email == emailAddress).AnyAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<User> UserNameExistsAsync(string userName)
@@ -65,19 +79,39 @@ namespace IncidentManagementSystem.Repositories
         {
             var filter = Builders<User>.Filter.Eq(u => u.Email, email);
             var update = Builders<User>.Update.Set(u => u.ResetPasswordViewModel.Token, token).Set(u => u.ResetPasswordViewModel.TokenExpiry, tokenExpiry);
-            await _users.UpdateOneAsync(filter, update);
+            try
+            {
+                await _users.UpdateOneAsync(filter, update);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<User> CheckTokenValidityAsync(string token)
         {
-            return await _users.Find(user => user.ResetPasswordViewModel.Token == token && user.ResetPasswordViewModel.TokenExpiry > DateTime.UtcNow).FirstOrDefaultAsync();
+            try
+            {
+                return await _users.Find(user => user.ResetPasswordViewModel.Token == token && user.ResetPasswordViewModel.TokenExpiry > DateTime.UtcNow).FirstOrDefaultAsync();
+            }catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task ResetPasswordAsync(string token, string password)
         {
             var filter = Builders<User>.Filter.Eq(u => u.ResetPasswordViewModel.Token, token);
             var update = Builders<User>.Update.Set(u => u.Password, password).Unset(u => u.ResetPasswordViewModel);
-            await _users.UpdateOneAsync(filter, update);
+            try
+            {
+                await _users.UpdateOneAsync(filter, update);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<List<string>> GetDistinctBranchesAsync()

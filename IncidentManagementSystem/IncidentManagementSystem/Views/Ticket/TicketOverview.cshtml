@@ -2,6 +2,7 @@
 	ViewData["Title"] = "Tickets Overview";
 
 	long totalTickets = (long)ViewData["TotalTickets"];
+	
 	long totalOpenTickets = (long)ViewData["TotalOpenTickets"];
 	long totalResolvedTickets = (long)ViewData["TotalResolvedTickets"];
 	long totalClosedTickets = (long)ViewData["TotalClosedTickets"];
@@ -19,6 +20,10 @@
 			<div>
 				<h1 class="ms-2 mb-5 mt-1">Tickets Overview</h1>
 			</div>
+			@if(totalTickets == 0)
+			{
+			<div class="alert alert-info">There are no incidents reported.</div>
+			}
 			<div class="d-flex flex-row text-center justify-content-evenly">
 				<div class="circular-progress progress-open">
 					<p><b>Open tickets:</b></p>
