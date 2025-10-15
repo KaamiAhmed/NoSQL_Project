@@ -78,6 +78,9 @@ namespace IncidentManagementSystem.Controllers
         {
             if (!ModelState.IsValid)
                 return View(model);
+            User? loggedInUser = _userService.GetLoggedInUser();
+            model.ReportedBy = loggedInUser.Id;
+
 
             model.Status = Status.Open;
             model.DateOfEvent = DateTime.UtcNow;

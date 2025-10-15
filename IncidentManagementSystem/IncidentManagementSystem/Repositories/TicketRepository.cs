@@ -7,10 +7,12 @@ namespace IncidentManagementSystem.Repositories
     public class TicketRepository : ITicketRepository
     {
         private readonly IMongoCollection<Ticket> _tickets;
+        private readonly IMongoCollection<User> _users;
 
         public TicketRepository(IMongoDatabase db)
         {
             _tickets = db.GetCollection<Ticket>("Ticket");
+            _users = db.GetCollection<User>("User");
         }
 
         public async Task<List<Ticket>> GetTicketsByUserAsync(string id)
@@ -41,8 +43,20 @@ namespace IncidentManagementSystem.Repositories
         // Service desk Employee
         public async Task<List<Ticket>> GetAllIncidentsAsync()
         {
-            return await _tickets.Find(_ => true).ToListAsync();
+            var tickets = await _tickets.Find(_ => true).ToListAsync();
+            var users = await _users.Find(_ => true).ToListAsync();
+
+            foreach (var ticket in tickets)
+            {
+                var reporter = users.FirstOrDefault(t => t.Id == ticket.ReportedBy);
+                ticket.ReportedByName = reporter != null
+                    ? $"{reporter.Name.FirstName} {reporter.Name.LastName}"   // if else short version
+                    : "Unknown";
+            }
+
+            return tickets;
         }
+
 
         public async Task<Ticket?> GetIncidentByIdAsync(string id)
         {
