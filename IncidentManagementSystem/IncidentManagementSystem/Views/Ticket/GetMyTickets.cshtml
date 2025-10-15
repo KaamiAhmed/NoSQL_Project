@@ -8,7 +8,17 @@
 	<partial name="_SideBar"></partial>
 
 	<div style="width:80%">
-		<h1 class="ms-2 mt-1 mb-3">My Tickets</h1>
+		<div class="d-flex justify-content-between align-items-center ms-2 mt-1 mb-3">
+			@if (ViewBag.UserRole == "ServiceDeskEmployee")
+			{
+				<h1>All Incidents</h1>
+				<a asp-action="CreateIncident" asp-controller="Ticket" class="btn btn-primary me-3">+ Add Incident</a>
+			}
+			else
+			{
+				<h1>My Tickets</h1>
+			}
+		</div>
 		@{
 			int count = 1;
 		}

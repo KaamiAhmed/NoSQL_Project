@@ -37,5 +37,39 @@ namespace IncidentManagementSystem.Repositories
         {
             return await _tickets.CountDocumentsAsync(Builders<Ticket>.Filter.Eq(t => t.ReportedBy, id) & Builders<Ticket>.Filter.Eq(t => t.Status, Status.Closed));
         }
+
+        // Service desk Employee
+        public async Task<List<Ticket>> GetAllIncidentsAsync()
+        {
+            return await _tickets.Find(_ => true).ToListAsync();
+        }
+
+        public async Task<Ticket?> GetIncidentByIdAsync(string id)
+        {
+            return await _tickets.Find(t => t.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task AddIncidentAsync(Ticket ticket)
+        {
+            await _tickets.InsertOneAsync(ticket);
+        }
+
+        public async Task UpdateIncidentAsync(Ticket ticket)
+        {
+            var filter = Builders<Ticket>.Filter.Eq(t => t.Id, ticket.Id);
+            var update = Builders<Ticket>.Update.Set(t => t.Deadline, ticket.Deadline).Set(t => t.Priority, ticket.Priority);
+
+            await _tickets.UpdateOneAsync(filter, update);
+
+        }
+
+        public async Task UpdateIncidentStatusAsync(string id, Status status)
+        {
+            var filter = Builders<Ticket>.Filter.Eq(t => t.Id, id);
+            var update = Builders<Ticket>.Update.Set(t => t.Status, status);
+
+            await _tickets.UpdateOneAsync(filter, update);
+
+        }
     }
 }
