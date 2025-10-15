@@ -8,11 +8,17 @@
 	<partial name="_SideBar"></partial>
 
 	<div style="width:80%">
-		<h1 class="ms-2 mt-1 mb-3">My Tickets</h1>
-		@* @if (@ViewBag.NoTickets != null)
-		{
-			<div class="alert alert-info">@ViewBag.NoTickets</div>
-		} *@
+		<div class="d-flex justify-content-between align-items-center ms-2 mt-1 mb-3">
+			@if (ViewBag.UserRole == "ServiceDeskEmployee")
+			{
+				<h1>All Incidents</h1>
+				<a asp-action="CreateIncident" asp-controller="Ticket" class="btn btn-primary me-3">+ Add Incident</a>
+			}
+			else
+			{
+				<h1>My Tickets</h1>
+			}
+		</div>
 		@{
 			int count = 1;
 		}
@@ -45,6 +51,7 @@
 						<div class="accordion-body">
 							<p><b>Description:</b> @ticket.Description</p>
 							<p><b>Status:</b> <span class="badge @bgColor">@ticket.Status</span></p>
+							<p><b>Reported By:</b> @ticket.ReportedByName</p>
 							<small class="text-muted">@ticket.DateOfEvent</small>
 						</div>
 					</div>

@@ -1,9 +1,10 @@
-﻿using MongoDB.Bson;
+﻿using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace IncidentManagementSystem.Models
 {
-    public class AssignedTo
+    public class AssignedTo 
     {
         [BsonElement("userId")]
         [BsonRepresentation(BsonType.ObjectId)]
