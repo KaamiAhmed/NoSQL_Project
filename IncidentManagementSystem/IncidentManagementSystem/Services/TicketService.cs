@@ -1,6 +1,7 @@
 ﻿using IncidentManagementSystem.Models;
 using IncidentManagementSystem.Repositories.Interfaces;
 using IncidentManagementSystem.Services.Interfaces;
+using MongoDB.Driver;
 
 namespace IncidentManagementSystem.Services
 {
@@ -36,6 +37,31 @@ namespace IncidentManagementSystem.Services
         public async Task<long> GetClosedTicketsAsync(string id, Status status)
         {
             return await _ticketRepository.GetClosedTicketsAsync(id, status);
+        }
+        // Service desk Employee
+        public async Task<List<Ticket>> GetAllIncidentsAsync()
+        {
+            return await _ticketRepository.GetAllIncidentsAsync();
+        }
+
+        public async Task<Ticket?> GetIncidentByIdAsync(string id)
+        {
+            return await _ticketRepository.GetIncidentByIdAsync(id);
+        }
+
+        public async Task AddIncidentAsync(Ticket ticket)
+        {
+            await _ticketRepository.AddIncidentAsync(ticket);
+        }
+
+        public async Task UpdateIncidentAsync(Ticket ticket)
+        {
+            await _ticketRepository.UpdateIncidentAsync(ticket);
+        }
+
+        public async Task UpdateIncidentStatusAsync(string id, Status status)
+        {          
+            await _ticketRepository.UpdateIncidentStatusAsync(id, status);
         }
     }
 }

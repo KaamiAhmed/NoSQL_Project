@@ -1,13 +1,7 @@
 {
   "ExpandedNodes": [
-    "",
-    "\\.github",
-    "\\IncidentManagementSystem",
-    "\\IncidentManagementSystem\\IncidentManagementSystem",
-    "\\IncidentManagementSystem\\IncidentManagementSystem\\Services",
-    "\\IncidentManagementSystem\\NoSQL_Project_Tests"
+    ""
   ],
-
   "SelectedNode": "\\IncidentManagementSystem.sln",
   "PreviewInSolutionExplorer": false
 }
