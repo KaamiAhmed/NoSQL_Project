@@ -16,5 +16,12 @@ namespace IncidentManagementSystem.Services.Interfaces
         Task AddIncidentAsync(Ticket ticket);
         Task UpdateIncidentAsync(Ticket ticket);
         Task UpdateIncidentStatusAsync(string id, Status status);
+
+        // Dashboard Service Desk Employee
+        Task<long> GetAllTicketsAsync();
+        Task<long> GetAllOpenTicketsAsync(Status status);
+        Task<long> GetAllResolvedTicketsAsync(Status status);
+        Task<long> GetAllClosedTicketsAsync(Status status);
+
     }
 }

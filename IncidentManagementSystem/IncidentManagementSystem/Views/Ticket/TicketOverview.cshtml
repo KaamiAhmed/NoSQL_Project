@@ -15,10 +15,10 @@
 		closedPercentage = (double)totalClosedTickets / (int)totalTickets * 100;
 	}
 	else { 
-	totalTickets = (long)ViewData["TotalTickets"];
-	totalOpenTickets = (long)ViewData["TotalOpenTickets"];
-	totalResolvedTickets = (long)ViewData["TotalResolvedTickets"];
-	totalClosedTickets = (long)ViewData["TotalClosedTickets"];
+	totalTickets = (long)ViewData["TotalAllTickets"];
+	totalOpenTickets = (long)ViewData["TotalAllOpenTickets"];
+	totalResolvedTickets = (long)ViewData["TotalAllResolvedTickets"];
+	totalClosedTickets = (long)ViewData["TotalAllClosedTickets"];
 
 	 openPercentage = (double)totalOpenTickets / (int)totalTickets * 100;
 	 resolvedPercentage = (double)totalResolvedTickets / (int)totalTickets * 100;
