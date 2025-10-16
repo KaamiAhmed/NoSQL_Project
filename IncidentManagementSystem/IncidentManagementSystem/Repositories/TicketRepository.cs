@@ -83,7 +83,7 @@ namespace IncidentManagementSystem.Repositories
 
             foreach (var ticket in tickets)
             {
-                var reporter = users.FirstOrDefault(t => t.Id == ticket.ReportedBy);
+                var reporter = users.FirstOrDefault(u => u.Id == ticket.ReportedBy);
                 ticket.ReportedByName = reporter != null
                     ? $"{reporter.Name.FirstName} {reporter.Name.LastName}"   // if else short version
                     : "Unknown";
@@ -91,7 +91,6 @@ namespace IncidentManagementSystem.Repositories
 
             return tickets;
         }
-
 
         public async Task<Ticket?> GetIncidentByIdAsync(string id)
         {
