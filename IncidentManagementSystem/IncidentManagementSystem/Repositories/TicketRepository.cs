@@ -92,7 +92,6 @@ namespace IncidentManagementSystem.Repositories
             return tickets;
         }
 
-
         public async Task<Ticket?> GetIncidentByIdAsync(string id)
         {
             return await _tickets.Find(t => t.Id == id).FirstOrDefaultAsync();
