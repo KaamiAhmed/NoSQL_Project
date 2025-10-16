@@ -14,10 +14,6 @@ namespace IncidentManagementSystem.Services.Interfaces
         Task AddUserAsync(User user);
         Task<User> GetUserByLoginAsync(string userName, string password, Role role);
         Task<User> UserNameExistsAsync(string userName);
-        Task ForgotPasswordAsync(string email, string resetLink);
-        
-        Task<User> CheckTokenValidityAsync(string token);
-        Task ResetPasswordAsync(string token, string password);
         
         Task UpdateUserAsync(string id, User updatedUser);
 

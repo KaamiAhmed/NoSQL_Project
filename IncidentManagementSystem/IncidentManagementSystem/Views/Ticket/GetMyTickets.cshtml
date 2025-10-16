@@ -18,7 +18,12 @@
 			{
 				<h1>My Tickets</h1>
 			}
+
 		</div>
+		@if (ViewBag.NoTickets != null)
+		{
+			<div class="alert alert-info">@ViewBag.NoTickets</div>
+		}
 		@{
 			int count = 1;
 		}

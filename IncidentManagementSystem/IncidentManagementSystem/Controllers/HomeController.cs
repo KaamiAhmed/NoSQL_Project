@@ -12,11 +12,13 @@ namespace IncidentManagementSystem.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IUserService _userService;
+        private readonly IResetPasswordService _resetPasswordService;
 
-        public HomeController(ILogger<HomeController> logger, IUserService userService)
+        public HomeController(ILogger<HomeController> logger, IUserService userService, IResetPasswordService resetPasswordService)
         {
             _logger = logger;
             _userService = userService;
+            _resetPasswordService = resetPasswordService;
         }
 
         public IActionResult Logout()
@@ -80,7 +82,7 @@ namespace IncidentManagementSystem.Controllers
                 string? resetLink = Url.Action("ResetPassword", "Home", null, Request.Scheme);
                 if (resetLink != null)
                 {
-                    await _userService.ForgotPasswordAsync(email, resetLink);
+                    await _resetPasswordService.ForgotPasswordAsync(email, resetLink);
                 }
 
                 ViewBag.EmailSent = $"Email with reset password link has been sent to you. Take me to <a href='https://mail.google.com'>Gmail</a>";
@@ -88,14 +90,14 @@ namespace IncidentManagementSystem.Controllers
             }
             catch (Exception ex)
             {
-                ViewBag.EmailNotSent = $"{ex.Message}";
+                ViewBag.EmailNotFound = $"{ex.Message}";
                 return View();
             }
         }
 
         public async Task<IActionResult> ResetPassword(string token)
         {
-            User user = await _userService.CheckTokenValidityAsync(token);
+            User user = await _resetPasswordService.CheckTokenValidityAsync(token);
             if (user == null)
             {
                 return Content("Invalid Request");
@@ -107,7 +109,7 @@ namespace IncidentManagementSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel resetPasswordViewModel)
         {
-            User user = await _userService.CheckTokenValidityAsync(resetPasswordViewModel.Token);
+            User user = await _resetPasswordService.CheckTokenValidityAsync(resetPasswordViewModel.Token);
             if (user == null)
             {
                 return Content("Invalid Request");
@@ -120,7 +122,15 @@ namespace IncidentManagementSystem.Controllers
             }
 
             //hash password and change it in db and unset the token and expiry fields
-            await _userService.ResetPasswordAsync(user.ResetPasswordViewModel.Token, resetPasswordViewModel.NewPassword);
+            try
+            {
+                await _resetPasswordService.ResetPasswordAsync(user.ResetPasswordViewModel.Token, resetPasswordViewModel.NewPassword);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.SamePasswordAgain = $"{ex.Message}";
+                return View(user.ResetPasswordViewModel);
+            }
 
             TempData["PasswordChanged"] = "Password updated successfully";
             return RedirectToAction("Login");
