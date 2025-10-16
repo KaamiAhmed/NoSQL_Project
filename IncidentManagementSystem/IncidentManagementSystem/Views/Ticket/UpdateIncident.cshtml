@@ -1,0 +1,74 @@
+﻿@model IncidentManagementSystem.Models.Ticket
+@{
+    ViewData["Title"] = "Update Incident";
+    var serviceDeskEmployees = ViewBag.ServiceDeskEmployees as List<IncidentManagementSystem.Models.User> ?? new List<IncidentManagementSystem.Models.User>();
+}
+
+<div class="content-area flex-grow-1 bg-light p-5 d-flex flex-column align-items-center">
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-dark">Update Incident</h1>
+    </div>
+
+    <form asp-action="UpdateIncident" method="post" novalidate style="width: 100%; max-width: 750px;">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="card shadow-sm border-0 mb-4 bg-light">
+            <div class="card-body" style="font-size: 0.95rem;">
+                <p class="mb-2"><strong class="me-2">Title:</strong>@Model.Title</p>
+                <p class="mb-2"><strong class="me-2">Description:</strong>@Model.Description</p>
+                <p class="mb-2"><strong class="me-2">Type of Incident:</strong>@Model.TypeOfIncident</p>
+                <p class="mb-2"><strong class="me-2">Reported By:</strong>@Model.ReportedByName</p>
+                <p class="mb-0"><strong class="me-2">Status:</strong>@Model.Status</p>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body bg-white p-3">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Priority" class="form-label fw-semibold">Priority</label>
+                        <select asp-for="Priority" class="form-select" required>
+                            <option value="">-- Select Priority --</option>
+                            @foreach (var priority in Enum.GetValues(typeof(Priority)))
+                            {
+                                <option value="@priority" selected="@(Model.Priority == (Priority)priority)">
+                                    @priority
+                                </option>
+                            }
+                        </select>
+                        <span asp-validation-for="Priority" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="AssignedTo.UserId" class="form-label fw-semibold">Assign To</label>
+                        <select asp-for="AssignedTo.UserId" class="form-select" required>
+                            <option value="">-- Select Service Desk Employee --</option>
+                            @foreach (var emp in serviceDeskEmployees)
+                            {
+                                var fullName = emp.Name != null
+                                ? $"{emp.Name.FirstName} {emp.Name.LastName}"
+                                : emp.UserName;
+                                <option value="@emp.Id" selected="@(Model.AssignedTo?.UserId == emp.Id)">
+                                    @fullName
+                                </option>
+                            }
+                        </select>
+                        <span asp-validation-for="AssignedTo.UserId" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-3 gap-2">
+                    <button type="submit" class="btn btn-success px-4">Save Update</button>
+                    <a href="/Ticket/GetMyTickets" class="btn btn-outline-secondary px-4">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
