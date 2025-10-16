@@ -100,13 +100,20 @@ namespace IncidentManagementSystem.Repositories
 
         public async Task AddIncidentAsync(Ticket ticket)
         {
+            if (ticket.AssignedTo != null && string.IsNullOrWhiteSpace(ticket.AssignedTo.UserId))
+            {
+                ticket.AssignedTo = null;
+            }
+
             await _tickets.InsertOneAsync(ticket);
         }
+        
 
         public async Task UpdateIncidentAsync(Ticket ticket)
         {
+
             var filter = Builders<Ticket>.Filter.Eq(t => t.Id, ticket.Id);
-            var update = Builders<Ticket>.Update.Set(t => t.Deadline, ticket.Deadline).Set(t => t.Priority, ticket.Priority);
+            var update = Builders<Ticket>.Update.Set(t => t.AssignedTo, ticket.AssignedTo).Set(t => t.Priority, ticket.Priority).Set(t => t.Status, ticket.Status);
 
             await _tickets.UpdateOneAsync(filter, update);
 
@@ -114,10 +121,20 @@ namespace IncidentManagementSystem.Repositories
 
         public async Task UpdateIncidentStatusAsync(string id, Status status)
         {
-            var filter = Builders<Ticket>.Filter.Eq(t => t.Id, id);
-            var update = Builders<Ticket>.Update.Set(t => t.Status, status);
+            var ticket = await _tickets.Find(t => t.Id == id).FirstOrDefaultAsync();
+            if (ticket == null)
+                return;
 
-            await _tickets.UpdateOneAsync(filter, update);
+            if (ticket.AssignedTo != null && string.IsNullOrWhiteSpace(ticket.AssignedTo.UserId))
+            {
+                ticket.AssignedTo = null;
+            }
+
+           
+            ticket.Status = status;
+
+           
+            await _tickets.ReplaceOneAsync(t => t.Id == id, ticket);
 
         }
 
