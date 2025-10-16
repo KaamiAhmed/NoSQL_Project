@@ -1,0 +1,67 @@
+﻿@model IncidentManagementSystem.Models.Ticket
+
+@{
+    ViewData["Title"] = "Create New Incident";
+}
+
+    <div class="content-area flex-grow-1 bg-light p-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="fw-bold text-dark">🛠️ Create New Incident</h1>
+        </div>
+
+        <div class="card shadow-lg border-0" style="max-width: 750px; margin: auto;">
+            <div class="card-body p-4">
+                <form asp-action="CreateIncident" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label fw-semibold">Title</label>
+                        <input asp-for="Title" class="form-control form-control-lg" placeholder="Enter a clear title for the incident" />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label fw-semibold">Description</label>
+                        <textarea asp-for="Description" rows="4" class="form-control form-control-lg" placeholder="Describe the issue in detail..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+                  
+                    <div class="mb-3">
+                        <label asp-for="TypeOfIncident" class="form-label fw-semibold">Type of Incident</label>
+                        <select asp-for="TypeOfIncident" class="form-select form-select-lg">
+                            <option value=""> Select Type </option>
+                            <option>Network</option>
+                            <option>Software</option>
+                            <option>Hardware</option>
+                            <option>Other</option>
+                        </select>
+                        <span asp-validation-for="TypeOfIncident" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Priority" class="form-label fw-semibold">Priority</label>
+                        <select asp-for="Priority" class="form-select form-select-lg">
+                            <option value=""> Select Priority </option>
+                            <option value="High">🔥 High</option>
+                            <option value="Normal">⚙️ Normal</option>
+                            <option value="Low">🕒 Low</option>
+                        </select>
+                        <span asp-validation-for="Priority" class="text-danger small"></span>
+                    </div>
+
+
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-success btn-lg px-4 me-2 shadow-sm">
+                            💾 Save Incident
+                        </button>
+                        <a asp-action="GetMyTickets" asp-controller="Ticket" class="btn btn-outline-secondary btn-lg px-4">
+                            ✖ Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+

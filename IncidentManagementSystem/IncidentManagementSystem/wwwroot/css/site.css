@@ -87,3 +87,7 @@ body {
 .progress-closed .circular-progress-fg {
     stroke: #dc3545;
 }
+
+.nav-item p {
+    font-weight:bold;
+}
