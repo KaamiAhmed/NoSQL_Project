@@ -83,7 +83,7 @@ namespace IncidentManagementSystem.Repositories
 
             foreach (var ticket in tickets)
             {
-                var reporter = users.FirstOrDefault(t => t.Id == ticket.ReportedBy);
+                var reporter = users.FirstOrDefault(u => u.Id == ticket.ReportedBy);
                 ticket.ReportedByName = reporter != null
                     ? $"{reporter.Name.FirstName} {reporter.Name.LastName}"   // if else short version
                     : "Unknown";
@@ -91,7 +91,6 @@ namespace IncidentManagementSystem.Repositories
 
             return tickets;
         }
-
 
         public async Task<Ticket?> GetIncidentByIdAsync(string id)
         {
@@ -138,5 +137,50 @@ namespace IncidentManagementSystem.Repositories
 
         }
 
+        // Service Desk Dashbord
+        public async Task<long> GetAllTicketsAsync()
+        {
+            try
+            {
+                return await _tickets.CountDocumentsAsync(Builders<Ticket>.Filter.Empty);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        public async Task<long> GetAllOpenTicketsAsync(Status status)
+        {
+            try
+            {
+                return await _tickets.CountDocumentsAsync(Builders<Ticket>.Filter.Eq(t => t.Status, Status.Open));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        public async Task<long> GetAllResolvedTicketsAsync(Status status)
+        {
+            try
+            {
+                return await _tickets.CountDocumentsAsync(Builders<Ticket>.Filter.Eq(t => t.Status, Status.Resolved));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        public async Task<long> GetAllClosedTicketsAsync(Status status)
+        {
+            try
+            {
+                return await _tickets.CountDocumentsAsync(Builders<Ticket>.Filter.Eq(t => t.Status, Status.Closed));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
