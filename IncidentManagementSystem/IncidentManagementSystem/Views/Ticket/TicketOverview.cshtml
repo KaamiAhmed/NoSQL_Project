@@ -1,14 +1,30 @@
 ﻿@{
+	User? loggedInUser = (User?)ViewData["LoggedInUser"];
 	ViewData["Title"] = "Tickets Overview";
+	long totalTickets, totalOpenTickets, totalResolvedTickets, totalClosedTickets;
+	double openPercentage, resolvedPercentage, closedPercentage;
+	if (loggedInUser.Role == Role.RegularEmployee)
+	{
+		totalTickets = (long)ViewData["TotalTickets"];
+		totalOpenTickets = (long)ViewData["TotalOpenTickets"];
+		totalResolvedTickets = (long)ViewData["TotalResolvedTickets"];
+		totalClosedTickets = (long)ViewData["TotalClosedTickets"];
 
-	long totalTickets = (long)ViewData["TotalTickets"];
-	long totalOpenTickets = (long)ViewData["TotalOpenTickets"];
-	long totalResolvedTickets = (long)ViewData["TotalResolvedTickets"];
-	long totalClosedTickets = (long)ViewData["TotalClosedTickets"];
+		openPercentage = (double)totalOpenTickets / (int)totalTickets * 100;
+		resolvedPercentage = (double)totalResolvedTickets / (int)totalTickets * 100;
+		closedPercentage = (double)totalClosedTickets / (int)totalTickets * 100;
+	}
+	else { 
+	totalTickets = (long)ViewData["TotalTickets"];
+	totalOpenTickets = (long)ViewData["TotalOpenTickets"];
+	totalResolvedTickets = (long)ViewData["TotalResolvedTickets"];
+	totalClosedTickets = (long)ViewData["TotalClosedTickets"];
 
-	double openPercentage = (double)totalOpenTickets / (int)totalTickets * 100;
-	double resolvedPercentage = (double)totalResolvedTickets / (int)totalTickets * 100;
-	double closedPercentage = (double)totalClosedTickets / (int)totalTickets * 100;
+	 openPercentage = (double)totalOpenTickets / (int)totalTickets * 100;
+	 resolvedPercentage = (double)totalResolvedTickets / (int)totalTickets * 100;
+	 closedPercentage = (double)totalClosedTickets / (int)totalTickets * 100;
+	}
+	
 }
 
 <div class="main-container d-flex flex-row">
@@ -19,6 +35,7 @@
 			<div>
 				<h1 class="ms-2 mb-5 mt-1">Tickets Overview</h1>
 			</div>
+			
 			<div class="d-flex flex-row text-center justify-content-evenly">
 				<div class="circular-progress progress-open">
 					<p><b>Open tickets:</b></p>
