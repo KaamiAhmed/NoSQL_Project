@@ -29,7 +29,8 @@ namespace IncidentManagementSystem.Controllers
             ViewData["TotalClosedTickets"] = await _ticketService.GetClosedTicketsAsync(loggedInUser.Id, Status.Closed);
 
             ViewData["LoggedInUser"] = loggedInUser;
-            return View();
+                return View();
+           
         }
 
         [SessionAuthorize(Role.RegularEmployee, Role.ServiceDeskEmployee, Role.Admin)]
@@ -46,6 +47,10 @@ namespace IncidentManagementSystem.Controllers
                 else
                 {
                     myTickets = await _ticketService.GetTicketsByUserAsync(loggedInUser.Id);
+                    if(myTickets == null || myTickets.Count == 0)
+                    {
+                        ViewBag.NoTickets = "There are no incidents reported.";
+                    }
                 }
                 ViewData["LoggedInUser"] = loggedInUser;
                 ViewBag.UserRole = loggedInUser.Role.ToString();

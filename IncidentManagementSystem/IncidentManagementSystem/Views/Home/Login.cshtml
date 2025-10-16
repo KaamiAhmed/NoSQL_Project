@@ -4,11 +4,19 @@
 	ViewData["Title"] = "Login";
 }
 @{
+	//when something goes wrong with the database
+	if (ViewBag.Error != null)
+	{
+		<div class="alert alert-danger">@ViewBag.Error</div>
+	}
+
+	//for wrong credentials
 	if (ViewBag.ErrorMessage != null)
 	{
 		<div class="alert alert-danger">@ViewBag.ErrorMessage</div>
 	}
 
+	//permission denied message
 	if (TempData["ErrorMessage"] != null)
 	{
 		<div class="alert alert-danger"> @TempData["ErrorMessage"]</div>

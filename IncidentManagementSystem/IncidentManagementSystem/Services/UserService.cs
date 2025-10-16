@@ -14,12 +14,14 @@ namespace IncidentManagementSystem.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IResetPasswordRepository _resetPasswordRepository;
         private readonly IHttpContextAccessor _contextAccessor;
 
-        public UserService(IUserRepository userRepository, IHttpContextAccessor contextAccessor)
+        public UserService(IUserRepository userRepository, IHttpContextAccessor contextAccessor, IResetPasswordRepository resetPasswordRepository)
         {
             _userRepository = userRepository;
             _contextAccessor = contextAccessor;
+            _resetPasswordRepository = resetPasswordRepository;
         }
 
         public User? GetLoggedInUser()
@@ -51,7 +53,7 @@ namespace IncidentManagementSystem.Services
             if (await _userRepository.UserNameExistsAsync(user.UserName) != null)
                 throw new Exception("Username already exists.");
 
-            if (await _userRepository.EmailAddressExistsAsync(user.Email))
+            if (await _resetPasswordRepository.EmailAddressExistsAsync(user.Email))
                 throw new Exception("Email address already exists.");
             user.Password = HashPassword(user.Password);
             await _userRepository.AddUserAsync(user);
@@ -97,11 +99,6 @@ namespace IncidentManagementSystem.Services
                 byte[] hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
                 return Convert.ToBase64String(hashBytes);
             }
-        }
-
-        public async Task<bool> EmailAddressExistsAsync(string emailAddress)
-        {
-            return await _userRepository.EmailAddressExistsAsync(emailAddress);
         }
 
         public async Task<User> UserNameExistsAsync(string userName)
@@ -171,12 +168,6 @@ namespace IncidentManagementSystem.Services
         {
             await _userRepository.ResetPasswordAsync(token, HashPassword(password));
         }
-        public async Task<List<User>> GetUsersByRoleAsync(Role role)
-        {
-            var allUsers = await _userRepository.GetAllUsersAsync();
-            return allUsers.Where(u => u.Role == role).ToList();
-        }
-
 
     }
 }
