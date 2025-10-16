@@ -2,11 +2,13 @@
 
 @{
     ViewData["Title"] = "Create New Incident";
+    var employees = ViewBag.RegularEmployees as List<IncidentManagementSystem.Models.User> ?? new List<IncidentManagementSystem.Models.User>();
+ 
 }
 
     <div class="content-area flex-grow-1 bg-light p-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="fw-bold text-dark">🛠️ Create New Incident</h1>
+            <h1 class="fw-bold text-dark"> Create New Incident</h1>
         </div>
 
         <div class="card shadow-lg border-0" style="max-width: 750px; margin: auto;">
@@ -38,13 +40,33 @@
                         <span asp-validation-for="TypeOfIncident" class="text-danger small"></span>
                     </div>
 
+               
+                
+                    <div class="mb-3">
+                        <label asp-for="ReportedBy" class="form-label fw-semibold">Reported By</label>
+                        <select asp-for="ReportedBy" class="form-select form-select-lg" required>
+                            <option value="">Select Employee</option>
+
+                            @foreach (var emp in employees)
+                            {
+                                var fullName = emp.Name != null
+							    ? $"{emp.Name.FirstName} {emp.Name.LastName}"  // if else shortcut
+                                : "(Unknown Name)";
+                                <option value="@emp.Id">@fullName</option>
+                            }
+                        </select>
+                        <span asp-validation-for="ReportedBy " class="text-danger small"></span>
+                    </div>
+                
+
+
                     <div class="mb-4">
                         <label asp-for="Priority" class="form-label fw-semibold">Priority</label>
                         <select asp-for="Priority" class="form-select form-select-lg">
                             <option value=""> Select Priority </option>
-                            <option value="High">🔥 High</option>
-                            <option value="Normal">⚙️ Normal</option>
-                            <option value="Low">🕒 Low</option>
+                            <option value="High"> High</option>
+                            <option value="Normal"> Normal</option>
+                            <option value="Low"> Low</option>
                         </select>
                         <span asp-validation-for="Priority" class="text-danger small"></span>
                     </div>
@@ -52,10 +74,10 @@
 
                     <div class="d-flex justify-content-end">
                         <button type="submit" class="btn btn-success btn-lg px-4 me-2 shadow-sm">
-                            💾 Save Incident
+                             Save Incident
                         </button>
                         <a asp-action="GetMyTickets" asp-controller="Ticket" class="btn btn-outline-secondary btn-lg px-4">
-                            ✖ Cancel
+                             Cancel
                         </a>
                     </div>
                 </form>

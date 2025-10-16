@@ -25,7 +25,10 @@ namespace IncidentManagementSystem.Services.Interfaces
         
         Task DeleteUserAsync(string id);
 
-       
+        Task<List<User>> GetUsersByRoleAsync(Role role);
+
+
+
     }
 
 }

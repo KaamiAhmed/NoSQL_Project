@@ -171,6 +171,12 @@ namespace IncidentManagementSystem.Services
         {
             await _userRepository.ResetPasswordAsync(token, HashPassword(password));
         }
+        public async Task<List<User>> GetUsersByRoleAsync(Role role)
+        {
+            var allUsers = await _userRepository.GetAllUsersAsync();
+            return allUsers.Where(u => u.Role == role).ToList();
+        }
+
 
     }
 }

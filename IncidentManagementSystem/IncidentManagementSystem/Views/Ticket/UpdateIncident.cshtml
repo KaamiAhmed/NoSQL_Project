@@ -1,0 +1,75 @@
+﻿@model IncidentManagementSystem.Models.Ticket
+@{
+    ViewData["Title"] = "Update Incident";
+    var serviceDeskEmployees = ViewBag.ServiceDeskEmployees as List<IncidentManagementSystem.Models.User>;
+}
+
+<div class="container mt-4">
+    <h2 class="fw-bold mb-4">Update Incident</h2>
+
+    <form asp-action="UpdateIncident" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+
+        <div class="card p-4 shadow-sm">
+            <div class="mb-3">
+                <label class="form-label"><b>Title:</b></label>
+                <input type="text" class="form-control" value="@Model.Title" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><b>Description:</b></label>
+                <textarea class="form-control" rows="3" readonly>@Model.Description</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><b>Type of Incident:</b></label>
+                <input type="text" class="form-control" value="@Model.TypeOfIncident" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><b>Reported By:</b></label>
+                <input type="text" class="form-control" value="@Model.ReportedByName" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><b>Status:</b></label>
+                <input type="text" class="form-control" value="@Model.Status" readonly />
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label"><b>Priority:</b></label>
+                    <select asp-for="Priority" class="form-select">
+                        <option value="">-- Select Priority --</option>
+                        <option value="High" selected="@(Model.Priority == Priority.High)">High</option>
+                        <option value="Normal" selected="@(Model.Priority == Priority.Normal)">Normal</option>
+                        <option value="Low" selected="@(Model.Priority == Priority.Low)">Low</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label"><b>Assign To:</b></label>
+                    <select asp-for="AssignedTo.UserId" class="form-select">
+                        <option value="">-- Select Service Desk Employee --</option>
+                        @foreach (var emp in serviceDeskEmployees)
+                        {
+                            var fullName = emp.Name != null ? $"{emp.Name.FirstName} {emp.Name.LastName}" : emp.UserName;
+                            <option value="@emp.Id" selected="@(Model.AssignedTo?.UserId == emp.Id)">
+                                @fullName
+                            </option>
+                        }
+                    </select>
+                </div>
+
+            <div class="mt-4 d-flex justify-content-end gap-2">
+                <button type="submit" class="btn btn-success px-4">
+                    <i class="bi bi-save"></i> Save Update
+                </button>
+                <a href="/Ticket/GetMyTickets" class="btn btn-secondary px-4">
+                    <i class="bi bi-x-circle"></i> Cancel
+                </a>
+            </div>
+        </div>
+    </form>
+</div>

@@ -66,8 +66,11 @@ namespace IncidentManagementSystem.Controllers
 
         [SessionAuthorize(Role.ServiceDeskEmployee)]
         [HttpGet]
-        public IActionResult CreateIncident()
+        public async Task<IActionResult> CreateIncident()
         {
+            var regularEmployees = await _userService.GetUsersByRoleAsync(Role.RegularEmployee) ?? new List<User>();
+            ViewBag.RegularEmployees = regularEmployees;
+            ViewBag.LoggedInUser = _userService.GetLoggedInUser();
             return View();
         }
 
@@ -76,14 +79,21 @@ namespace IncidentManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateIncident(Ticket model)
         {
+            var loggedInUser = _userService.GetLoggedInUser();
+            ViewBag.LoggedInUser = loggedInUser;
+            ViewBag.RegularEmployees = await _userService.GetUsersByRoleAsync(Role.RegularEmployee);
+
             if (!ModelState.IsValid)
                 return View(model);
-            User? loggedInUser = _userService.GetLoggedInUser();
-            model.ReportedBy = loggedInUser.Id;
-
 
             model.Status = Status.Open;
             model.DateOfEvent = DateTime.UtcNow;
+
+            // Auto-assign for Regular Employees
+            if (loggedInUser.Role == Role.RegularEmployee)
+            {
+                model.ReportedBy = loggedInUser.Id;
+            }
 
             switch (model.Priority)
             {
@@ -102,5 +112,59 @@ namespace IncidentManagementSystem.Controllers
             TempData["SuccessMessage"] = "Incident created successfully!";
             return RedirectToAction("GetMyTickets", "Ticket");
         }
+        [SessionAuthorize(Role.ServiceDeskEmployee)]
+        [HttpGet]
+        public async Task<IActionResult> UpdateIncident(string id)
+        {
+            var ticket = await _ticketService.GetIncidentByIdAsync(id);
+            if (ticket == null)
+                return NotFound();
+            if (!string.IsNullOrEmpty(ticket.ReportedBy))
+            {
+                var reporter = await _userService.GetByIdAsync(ticket.ReportedBy);
+                if (reporter != null)
+                {
+                    ticket.ReportedByName = $"{reporter.Name.FirstName} {reporter.Name.LastName}";
+                }
+            }
+
+            var serviceDeskEmployees = await _userService.GetUsersByRoleAsync(Role.ServiceDeskEmployee);
+            ViewBag.ServiceDeskEmployees = serviceDeskEmployees;
+            ViewData["LoggedInUser"] = _userService.GetLoggedInUser();
+            return View(ticket);
+        }
+
+        [SessionAuthorize(Role.ServiceDeskEmployee)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateIncident(Ticket model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+            var selectedEmp = await _userService.GetByIdAsync(model.AssignedTo.UserId);
+            if (selectedEmp != null)
+            {
+                model.AssignedTo.FirstName = selectedEmp.Name.FirstName;
+                model.AssignedTo.LastName = selectedEmp.Name.LastName;
+            }
+
+
+            await _ticketService.UpdateIncidentAsync(model);
+            TempData["SuccessMessage"] = "Incident updated successfully!";
+            return RedirectToAction("GetMyTickets", "Ticket");
+        }
+        [SessionAuthorize(Role.ServiceDeskEmployee)]
+        [HttpPost]
+        public async Task<IActionResult> UpdateStatus(string id, Status status)
+        {
+            if (string.IsNullOrEmpty(id))
+                return BadRequest("Invalid ticket ID");
+
+            await _ticketService.UpdateIncidentStatusAsync(id, status);
+            return Json(new { success = true, newStatus = status.ToString() });
+        }
+
+
     }
+
 }
