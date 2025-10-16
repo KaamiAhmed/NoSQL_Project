@@ -42,6 +42,9 @@ namespace IncidentManagementSystem.Models
         public Priority Priority { get; set; }
 
         [BsonElement("assignedto")]
-        public AssignedTo? AssignedTo { get; set; }
+        public AssignedTo? AssignedTo { get; set; } = new AssignedTo();
+      
+
+
     }
 }
