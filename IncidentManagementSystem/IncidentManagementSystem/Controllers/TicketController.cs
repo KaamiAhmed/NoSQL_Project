@@ -29,7 +29,8 @@ namespace IncidentManagementSystem.Controllers
             ViewData["TotalClosedTickets"] = await _ticketService.GetClosedTicketsAsync(loggedInUser.Id, Status.Closed);
 
             ViewData["LoggedInUser"] = loggedInUser;
-            return View();
+                return View();
+           
         }
 
         [SessionAuthorize(Role.RegularEmployee, Role.ServiceDeskEmployee, Role.Admin)]
