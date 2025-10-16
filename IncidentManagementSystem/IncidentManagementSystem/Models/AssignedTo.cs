@@ -8,7 +8,8 @@ namespace IncidentManagementSystem.Models
     {
         [BsonElement("userId")]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string userId { get; set; } = "";
+        [BsonIgnoreIfNull]
+        public string UserId { get; set; } = "";
 
         [BsonElement("firstname")]
         public string FirstName { get; set; } = "";
