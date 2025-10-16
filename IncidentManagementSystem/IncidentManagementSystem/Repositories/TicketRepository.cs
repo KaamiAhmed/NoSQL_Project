@@ -75,7 +75,7 @@ namespace IncidentManagementSystem.Repositories
             }
         }
 
-        // Service desk Employee
+        // Service desk Employee  
         public async Task<List<Ticket>> GetAllIncidentsAsync()
         {
             var tickets = await _tickets.Find(_ => true).ToListAsync();
