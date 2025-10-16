@@ -21,12 +21,21 @@ namespace IncidentManagementSystem.Controllers
         public async Task<IActionResult> TicketOverview()
         {
             User? loggedInUser = _userService.GetLoggedInUser();
+            if (loggedInUser.Role == Role.RegularEmployee)
+            {
+                ViewData["TotalTickets"] = await _ticketService.GetTicketsAsync(loggedInUser.Id);
 
-            ViewData["TotalTickets"] = await _ticketService.GetTicketsAsync(loggedInUser.Id);
-
-            ViewData["TotalOpenTickets"] = await _ticketService.GetOpenTicketsAsync(loggedInUser.Id, Status.Open);
-            ViewData["TotalResolvedTickets"] = await _ticketService.GetResolvedTicketsAsync(loggedInUser.Id, Status.Resolved);
-            ViewData["TotalClosedTickets"] = await _ticketService.GetClosedTicketsAsync(loggedInUser.Id, Status.Closed);
+                ViewData["TotalOpenTickets"] = await _ticketService.GetOpenTicketsAsync(loggedInUser.Id, Status.Open);
+                ViewData["TotalResolvedTickets"] = await _ticketService.GetResolvedTicketsAsync(loggedInUser.Id, Status.Resolved);
+                ViewData["TotalClosedTickets"] = await _ticketService.GetClosedTicketsAsync(loggedInUser.Id, Status.Closed);
+            }
+            else
+            {
+                ViewData["TotalAllTickets"] = await _ticketService.GetAllTicketsAsync();
+                ViewData["TotalAllOpenTickets"] = await _ticketService.GetAllOpenTicketsAsync(Status.Open);
+                ViewData["TotalAllResolvedTickets"] = await _ticketService.GetAllResolvedTicketsAsync(Status.Resolved);
+                ViewData["TotalAllClosedTickets"] = await _ticketService.GetAllClosedTicketsAsync(Status.Closed);
+            }
 
             ViewData["LoggedInUser"] = loggedInUser;
                 return View();
