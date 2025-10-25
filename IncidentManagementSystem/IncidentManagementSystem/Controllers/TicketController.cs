@@ -228,6 +228,19 @@ namespace IncidentManagementSystem.Controllers
                     model.AssignedTo.FirstName = selectedEmp.Name.FirstName;
                     model.AssignedTo.LastName = selectedEmp.Name.LastName;
                 }
+                // Update deadline based on priority
+                switch (model.Priority)
+                {
+                    case Priority.High:
+                        model.Deadline = 7;
+                        break;
+                    case Priority.Normal:
+                        model.Deadline = 14;
+                        break;
+                    case Priority.Low:
+                        model.Deadline = 21;
+                        break;
+                }
 
                 await _ticketService.UpdateIncidentAsync(model);
 

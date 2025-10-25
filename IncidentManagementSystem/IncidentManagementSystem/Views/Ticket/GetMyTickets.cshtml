@@ -12,13 +12,13 @@
 			@if (ViewBag.UserRole == "ServiceDeskEmployee")
 			{
 				<h1>All Incidents</h1>
-				<a asp-action="CreateIncident" asp-controller="Ticket" class="btn btn-primary me-3">+ Add Incident</a>
+				
 			}
 			else
 			{
 				<h1>My Tickets</h1>
 			}
-
+			<a asp-action="CreateIncident" asp-controller="Ticket" class="btn btn-primary me-3">+ Add Incident</a>
 		</div>
 		@if (ViewBag.NoTickets != null)
 		{
