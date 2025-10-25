@@ -1,5 +1,6 @@
 ﻿using IncidentManagementSystem.Commons;
 using IncidentManagementSystem.Models;
+using IncidentManagementSystem.Services;
 using IncidentManagementSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
@@ -10,11 +11,13 @@ namespace IncidentManagementSystem.Controllers
     {
         private readonly ITicketService _ticketService;
         private readonly IUserService _userService;
+        private readonly ISearchIncidentService _searchIncidentService;
 
-        public TicketController(ITicketService ticketService, IUserService userService)
+        public TicketController(ITicketService ticketService, IUserService userService, ISearchIncidentService searchIncidentService)
         {
             _ticketService = ticketService;
             _userService = userService;
+            _searchIncidentService = searchIncidentService;
         }
 
         [SessionAuthorize(Role.RegularEmployee, Role.ServiceDeskEmployee, Role.Admin)]
@@ -43,7 +46,7 @@ namespace IncidentManagementSystem.Controllers
         }
 
         [SessionAuthorize(Role.RegularEmployee, Role.ServiceDeskEmployee, Role.Admin)]
-        public async Task<IActionResult> GetMyTickets()
+        public async Task<IActionResult> GetMyTickets(string searchWord)
         {
             User? loggedInUser = _userService.GetLoggedInUser();
             List<Ticket> myTickets = new List<Ticket>();
@@ -61,7 +64,12 @@ namespace IncidentManagementSystem.Controllers
                         ViewBag.NoTickets = "There are no incidents reported.";
                     }
                 }
+                if (searchWord != null)
+                {
+                    myTickets = await _searchIncidentService.SearchIncidentsAsync(searchWord);
+                }
                 ViewData["LoggedInUser"] = loggedInUser;
+                ViewData["CurrentFilter"] = searchWord;
                 ViewBag.UserRole = loggedInUser.Role.ToString();
             }
             return View(myTickets);

@@ -20,6 +20,10 @@
 			}
 			<a asp-action="CreateIncident" asp-controller="Ticket" class="btn btn-primary me-3">+ Add Incident</a>
 		</div>
+		<form method="get" action="GetMyTickets" class="d-flex mb-4 ms-2">
+			<input class="w-25 me-2" type="search" name="searchWord" placeholder="Search by Title or Description" value="@ViewData["CurrentFilter"]" />
+			<button class="btn btn-outline-success" type="submit">Search</button>
+		</form>
 		@if (ViewBag.NoTickets != null)
 		{
 			<div class="alert alert-info">@ViewBag.NoTickets</div>
