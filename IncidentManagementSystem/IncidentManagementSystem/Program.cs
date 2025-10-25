@@ -21,6 +21,8 @@ namespace IncidentManagementSystem
             builder.Services.AddScoped<ITicketService, TicketService>();
             builder.Services.AddScoped<IResetPasswordRepository, ResetPasswordRepository>();
             builder.Services.AddScoped<IResetPasswordService, ResetPasswordService>();
+            builder.Services.AddScoped<ISearchIncidentRepository, SearchIncidentRepository>();
+            builder.Services.AddScoped<ISearchIncidentService, SearchIncidentService>();
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddSession(options =>
