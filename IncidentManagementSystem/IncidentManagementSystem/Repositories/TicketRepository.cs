@@ -75,7 +75,7 @@ namespace IncidentManagementSystem.Repositories
             }
         }
 
-        // Service desk Employee
+        // Service desk Employee  
         public async Task<List<Ticket>> GetAllIncidentsAsync()
         {
             var tickets = await _tickets.Find(_ => true).ToListAsync();
@@ -83,7 +83,7 @@ namespace IncidentManagementSystem.Repositories
 
             foreach (var ticket in tickets)
             {
-                var reporter = users.FirstOrDefault(t => t.Id == ticket.ReportedBy);
+                var reporter = users.FirstOrDefault(u => u.Id == ticket.ReportedBy);
                 ticket.ReportedByName = reporter != null
                     ? $"{reporter.Name.FirstName} {reporter.Name.LastName}"   // if else short version
                     : "Unknown";
@@ -92,7 +92,6 @@ namespace IncidentManagementSystem.Repositories
             return tickets;
         }
 
-
         public async Task<Ticket?> GetIncidentByIdAsync(string id)
         {
             return await _tickets.Find(t => t.Id == id).FirstOrDefaultAsync();
@@ -100,13 +99,20 @@ namespace IncidentManagementSystem.Repositories
 
         public async Task AddIncidentAsync(Ticket ticket)
         {
+            if (ticket.AssignedTo != null && string.IsNullOrWhiteSpace(ticket.AssignedTo.UserId))
+            {
+                ticket.AssignedTo = null;
+            }
+
             await _tickets.InsertOneAsync(ticket);
         }
+        
 
         public async Task UpdateIncidentAsync(Ticket ticket)
         {
+
             var filter = Builders<Ticket>.Filter.Eq(t => t.Id, ticket.Id);
-            var update = Builders<Ticket>.Update.Set(t => t.Deadline, ticket.Deadline).Set(t => t.Priority, ticket.Priority);
+            var update = Builders<Ticket>.Update.Set(t => t.AssignedTo, ticket.AssignedTo).Set(t => t.Priority, ticket.Priority).Set(t => t.Status, ticket.Status);
 
             await _tickets.UpdateOneAsync(filter, update);
 
@@ -114,12 +120,67 @@ namespace IncidentManagementSystem.Repositories
 
         public async Task UpdateIncidentStatusAsync(string id, Status status)
         {
-            var filter = Builders<Ticket>.Filter.Eq(t => t.Id, id);
-            var update = Builders<Ticket>.Update.Set(t => t.Status, status);
+            var ticket = await _tickets.Find(t => t.Id == id).FirstOrDefaultAsync();
+            if (ticket == null)
+                return;
 
-            await _tickets.UpdateOneAsync(filter, update);
+            if (ticket.AssignedTo != null && string.IsNullOrWhiteSpace(ticket.AssignedTo.UserId))
+            {
+                ticket.AssignedTo = null;
+            }
+
+           
+            ticket.Status = status;
+
+           
+            await _tickets.ReplaceOneAsync(t => t.Id == id, ticket);
 
         }
 
+        // Service Desk Dashbord
+        public async Task<long> GetAllTicketsAsync()
+        {
+            try
+            {
+                return await _tickets.CountDocumentsAsync(Builders<Ticket>.Filter.Empty);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        public async Task<long> GetAllOpenTicketsAsync(Status status)
+        {
+            try
+            {
+                return await _tickets.CountDocumentsAsync(Builders<Ticket>.Filter.Eq(t => t.Status, Status.Open));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        public async Task<long> GetAllResolvedTicketsAsync(Status status)
+        {
+            try
+            {
+                return await _tickets.CountDocumentsAsync(Builders<Ticket>.Filter.Eq(t => t.Status, Status.Resolved));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        public async Task<long> GetAllClosedTicketsAsync(Status status)
+        {
+            try
+            {
+                return await _tickets.CountDocumentsAsync(Builders<Ticket>.Filter.Eq(t => t.Status, Status.Closed));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

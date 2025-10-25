@@ -106,5 +106,11 @@ namespace IncidentManagementSystem.Services
             return await _userRepository.UserNameExistsAsync(userName);
         }
 
+       public async Task<List<User>> GetUsersByRoleAsync(Role role)
+        {
+            var allUsers = await _userRepository.GetAllUsersAsync();
+            return allUsers.Where(u => u.Role == role).ToList();
+        }
+
     }
 }

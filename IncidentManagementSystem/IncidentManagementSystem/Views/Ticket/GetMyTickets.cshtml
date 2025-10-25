@@ -1,6 +1,6 @@
 ﻿@model List<IncidentManagementSystem.Models.Ticket>
 @{
-	//User? loggedInUser = (User?)ViewData["LoggedInUser"];
+	User? loggedInUser = (User?)ViewData["LoggedInUser"];
 	ViewData["Title"] = "Tickets";
 }
 
@@ -12,14 +12,18 @@
 			@if (ViewBag.UserRole == "ServiceDeskEmployee")
 			{
 				<h1>All Incidents</h1>
-				<a asp-action="CreateIncident" asp-controller="Ticket" class="btn btn-primary me-3">+ Add Incident</a>
+				
 			}
 			else
 			{
 				<h1>My Tickets</h1>
 			}
-
+			<a asp-action="CreateIncident" asp-controller="Ticket" class="btn btn-primary me-3">+ Add Incident</a>
 		</div>
+		<form method="get" action="GetMyTickets" class="d-flex mb-4 ms-2">
+			<input class="w-25 me-2" type="search" name="searchWord" placeholder="Search by Title or Description" value="@ViewData["CurrentFilter"]" />
+			<button class="btn btn-outline-success" type="submit">Search</button>
+		</form>
 		@if (ViewBag.NoTickets != null)
 		{
 			<div class="alert alert-info">@ViewBag.NoTickets</div>
@@ -55,9 +59,59 @@
 					<div id="@collapseId" class="accordion-collapse collapse" data-bs-parent="#accordion">
 						<div class="accordion-body">
 							<p><b>Description:</b> @ticket.Description</p>
-							<p><b>Status:</b> <span class="badge @bgColor">@ticket.Status</span></p>
-							<p><b>Reported By:</b> @ticket.ReportedByName</p>
+							@if (loggedInUser != null && loggedInUser.Role == Role.ServiceDeskEmployee)
+							{
+								if (ticket.Status == Status.Closed)
+								{
+									<p><b>Status:</b> <span class="badge @bgColor">@ticket.Status</span></p>
+								}
+								else
+								{
+									<p>
+										<b>Status:</b>
+										<select class="form-select form-select-sm status-dropdown @bgColor text-white"
+												data-ticket-id="@ticket.Id"
+												style="width: auto; display: inline-block; font-weight: 600; border: none; box-shadow: none;">
+											<option value="Open" selected="@(ticket.Status == Status.Open)">Open</option>
+											<option value="Resolved" selected="@(ticket.Status == Status.Resolved)">Resolved</option>
+											<option value="Closed" selected="@(ticket.Status == Status.Closed)">Closed</option>
+										</select>
+									</p>
+								}
+							}
+							else
+							{
+								<p><b>Status:</b> <span class="badge @bgColor">@ticket.Status</span></p>
+							}
+
+							@if(loggedInUser!=null && loggedInUser.Role== Role.ServiceDeskEmployee )
+							{
+							 <p><b>Reported By:</b> @ticket.ReportedByName</p>
+								<p>
+									<b>Assigned To:</b> @(ticket.AssignedTo != null && !string.IsNullOrWhiteSpace(ticket.AssignedTo.FirstName)
+																? $"{ticket.AssignedTo.FirstName} {ticket.AssignedTo.LastName}"
+																: "Not Assigned")
+						        </p>
+							}							
 							<small class="text-muted">@ticket.DateOfEvent</small>
+							@if (loggedInUser != null && loggedInUser.Role == Role.ServiceDeskEmployee)
+							{
+								<div class="mt-2 text-end">
+								@if (ticket.Status == Status.Closed)
+								{									
+									<button class="btn btn-sm btn-outline-secondary opacity-50" disabled>
+										<i class="bi bi-pencil-square"></i> Update
+										</button>
+									}
+									else
+									{
+										<a class="btn btn-sm btn-outline-primary" href="/Ticket/UpdateIncident/@ticket.Id">
+											<i class="bi bi-pencil-square"></i> Update
+										</a>
+									}
+									
+								</div>
+							}
 						</div>
 					</div>
 				</div>
@@ -66,3 +120,39 @@
 		}
 	</div>
 </div>
+@section Scripts {
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+		$(document).ready(function () {
+			$('.status-dropdown').on('change', function () {
+				var ticketId = $(this).data('ticket-id');
+				var newStatus = $(this).val();
+				var dropdown = $(this);
+
+				
+				dropdown.removeClass('bg-info bg-success bg-danger');
+
+				if (newStatus === 'Open') dropdown.addClass('bg-info');
+				else if (newStatus === 'Resolved') dropdown.addClass('bg-success');
+				else dropdown.addClass('bg-danger');
+
+
+				
+				$.ajax({
+					url: '/Ticket/UpdateStatus',
+					type: 'POST',
+					data: { id: ticketId, status: newStatus },
+					success: function (response) {
+						if (!response.success) {
+							alert('Failed to update status.');
+						}
+					},
+					error: function () {
+						alert('Error updating status.');
+					}
+				});
+			});
+		});
+	</script>
+}
+

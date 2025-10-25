@@ -63,5 +63,24 @@ namespace IncidentManagementSystem.Services
         {          
             await _ticketRepository.UpdateIncidentStatusAsync(id, status);
         }
+
+        // Dashboard Service Desk Employee
+        public async Task<long> GetAllTicketsAsync()
+        {
+            return await _ticketRepository.GetAllTicketsAsync();
+        }
+
+        public async Task<long> GetAllOpenTicketsAsync(Status status)
+        {
+            return await _ticketRepository.GetAllOpenTicketsAsync(status);
+        }
+        public async Task<long> GetAllResolvedTicketsAsync(Status status)
+        {
+            return await _ticketRepository.GetAllResolvedTicketsAsync(status);
+        }
+        public async Task<long> GetAllClosedTicketsAsync(Status status)
+        {
+            return await _ticketRepository.GetAllClosedTicketsAsync(status);
+        }
     }
 }
