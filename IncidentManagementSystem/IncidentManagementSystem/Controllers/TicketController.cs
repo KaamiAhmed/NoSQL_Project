@@ -24,7 +24,7 @@ namespace IncidentManagementSystem.Controllers
         public async Task<IActionResult> TicketOverview()
         {
             User? loggedInUser = _userService.GetLoggedInUser();
-            if (loggedInUser.Role == Role.RegularEmployee)
+            if (loggedInUser != null && loggedInUser.Role == Role.RegularEmployee)
             {
                 ViewData["TotalTickets"] = await _ticketService.GetTicketsAsync(loggedInUser.Id);
 
@@ -41,8 +41,8 @@ namespace IncidentManagementSystem.Controllers
             }
 
             ViewData["LoggedInUser"] = loggedInUser;
-                return View();
-           
+            return View();
+
         }
 
         [SessionAuthorize(Role.RegularEmployee, Role.ServiceDeskEmployee, Role.Admin)]
@@ -52,18 +52,20 @@ namespace IncidentManagementSystem.Controllers
             List<Ticket> myTickets = new List<Ticket>();
             if (loggedInUser != null)
             {
-                if (loggedInUser.Role == Role.ServiceDeskEmployee)
+                if (loggedInUser.Role == Role.RegularEmployee)
                 {
-                    myTickets = await _ticketService.GetAllIncidentsAsync();
+                    myTickets = await _ticketService.GetTicketsByUserAsync(loggedInUser.Id);
                 }
                 else
                 {
-                    myTickets = await _ticketService.GetTicketsByUserAsync(loggedInUser.Id);
-                    if(myTickets == null || myTickets.Count == 0)
-                    {
-                        ViewBag.NoTickets = "There are no incidents reported.";
-                    }
+                    myTickets = await _ticketService.GetAllIncidentsAsync();
                 }
+
+                if (myTickets == null || myTickets.Count == 0)
+                {
+                    ViewBag.NoTickets = "There are no incidents reported.";
+                }
+
                 if (searchWord != null)
                 {
                     myTickets = await _searchIncidentService.SearchIncidentsAsync(searchWord);
@@ -103,7 +105,7 @@ namespace IncidentManagementSystem.Controllers
         }
 
 
-        [SessionAuthorize(Role.ServiceDeskEmployee)]
+        [SessionAuthorize(Role.ServiceDeskEmployee, Role.RegularEmployee)]
         [HttpGet]
         public async Task<IActionResult> CreateIncident()
         {
@@ -129,7 +131,7 @@ namespace IncidentManagementSystem.Controllers
         }
 
 
-        [SessionAuthorize(Role.ServiceDeskEmployee)]
+        [SessionAuthorize(Role.ServiceDeskEmployee, Role.RegularEmployee)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateIncident(Ticket model)
@@ -162,6 +164,9 @@ namespace IncidentManagementSystem.Controllers
                     case Priority.Low:
                         model.Deadline = 21;
                         break;
+                    default:
+                        model.Deadline = null;
+                        break;
                 }
 
                 await _ticketService.AddIncidentAsync(model);
@@ -182,6 +187,7 @@ namespace IncidentManagementSystem.Controllers
                 return View(model);
             }
         }
+
         [SessionAuthorize(Role.ServiceDeskEmployee)]
         [HttpGet]
         public async Task<IActionResult> UpdateIncident(string id)
