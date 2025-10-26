@@ -43,8 +43,6 @@ namespace IncidentManagementSystem.Models
 
         [BsonElement("assignedto")]
         public AssignedTo? AssignedTo { get; set; } = new AssignedTo();
-      
-
 
     }
 }
