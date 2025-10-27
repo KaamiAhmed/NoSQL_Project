@@ -24,7 +24,7 @@
                     <ul class="navbar-nav flex-grow-1 d-flex justify-content-end me-4">
                         <li class="nav-item me-3">
                             <p class="nav-link border border-info rounded" style="text-align:center;font-size:18px;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Currently LoggedIn">
-                                @loggedInUser.Name.FirstName  @loggedInUser.Name.LastName
+                                @(loggedInUser?.Name?.FirstName ?? "") @(loggedInUser?.Name?.LastName ?? "")
                             </p>
                         </li>
                         <li class="nav-item" style="">

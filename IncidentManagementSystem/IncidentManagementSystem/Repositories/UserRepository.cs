@@ -47,7 +47,10 @@ namespace IncidentManagementSystem.Repositories
                 .Set(u => u.UserName, updatedUser.UserName)
                 .Set(u => u.Email, updatedUser.Email)
                 .Set(u => u.Password, updatedUser.Password)
-                .Set(u => u.Role, updatedUser.Role);
+                .Set(u => u.Role, updatedUser.Role)
+                .Set(u => u.Name.FirstName, updatedUser.Name.FirstName)
+                .Set(u => u.Name.LastName, updatedUser.Name.LastName)
+                .Set(u => u.Branch, updatedUser.Branch);
 
             await _users.UpdateOneAsync(filter, update);
         }
