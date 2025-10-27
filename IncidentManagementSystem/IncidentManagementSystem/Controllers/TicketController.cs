@@ -46,7 +46,7 @@ namespace IncidentManagementSystem.Controllers
         }
 
         [SessionAuthorize(Role.RegularEmployee, Role.ServiceDeskEmployee, Role.Admin)]
-        public async Task<IActionResult> GetMyTickets(string searchWord)
+        public async Task<IActionResult> GetMyTickets(string searchWord, string filterWord)
         {
             User? loggedInUser = _userService.GetLoggedInUser();
             List<Ticket> myTickets = new List<Ticket>();
@@ -70,8 +70,13 @@ namespace IncidentManagementSystem.Controllers
                 {
                     myTickets = await _searchIncidentService.SearchIncidentsAsync(searchWord);
                 }
+                if (filterWord != null)
+                {
+                    myTickets = myTickets.Where(t => t.Title.Contains(filterWord, StringComparison.OrdinalIgnoreCase)||t.Description.Contains(filterWord, StringComparison.OrdinalIgnoreCase)).ToList();
+                }
                 ViewData["LoggedInUser"] = loggedInUser;
-                ViewData["CurrentFilter"] = searchWord;
+                ViewData["CurrentSearch"] = searchWord;
+                ViewData["CurrentFilter"] = filterWord;
                 ViewBag.UserRole = loggedInUser.Role.ToString();
             }
             return View(myTickets);

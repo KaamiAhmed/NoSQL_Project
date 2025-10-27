@@ -66,22 +66,8 @@ namespace IncidentManagementSystem.Services
 
         public async Task UpdateUserAsync(string id, User updatedUser)
         {
-            if (!string.IsNullOrWhiteSpace(updatedUser.Password))
-            {
-                updatedUser.Password = HashPassword(updatedUser.Password);
-            }
-            else
-            {
-                var existing = await _userRepository.GetByIdAsync(id);
-                if (existing != null)
-                {
-                    updatedUser.Password = existing.Password;
-                }
-            }
-
             await _userRepository.UpdateUserAsync(id, updatedUser);
         }
-
         public async Task DeleteUserAsync(string id)
         {
             await _userRepository.DeleteUserAsync(id);
@@ -91,7 +77,6 @@ namespace IncidentManagementSystem.Services
         {
             return await _userRepository.GetUserByLoginAsync(userName, HashPassword(password), role);
         }
-
         private string HashPassword(string password)
         {
             using (SHA256 sha256 = SHA256.Create())
