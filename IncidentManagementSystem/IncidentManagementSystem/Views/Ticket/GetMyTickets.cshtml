@@ -24,7 +24,11 @@
 			}
 		</div>
 		<form method="get" action="/Ticket/GetMyTickets" class="d-flex mb-4 ms-2">
-			<input class="w-25 me-2" type="search" name="searchWord" placeholder="Search by Title or Description" value="@ViewData["CurrentFilter"]" />
+			<input class="w-25 me-2" type="search" name="searchWord" placeholder="Search by Title or Description" value="@ViewData["CurrentSearch"]" />
+			<button class="btn btn-outline-success" type="submit">Search</button>
+		</form>
+		<form method="get" action="/Ticket/GetMyTickets" class="d-flex mb-4 ms-2">
+			<input class="w-25 me-2" type="search" name="filterWord" placeholder="Filter by Title or Description" value="@ViewData["CurrentFilter"]" />
 			<button class="btn btn-outline-success" type="submit">Search</button>
 		</form>
 		@if (ViewBag.NoTickets != null)
