@@ -112,7 +112,7 @@ namespace IncidentManagementSystem.Repositories
         {
 
             var filter = Builders<Ticket>.Filter.Eq(t => t.Id, ticket.Id);
-            var update = Builders<Ticket>.Update.Set(t => t.AssignedTo, ticket.AssignedTo).Set(t => t.Priority, ticket.Priority).Set(t => t.Status, ticket.Status);
+            var update = Builders<Ticket>.Update.Set(t => t.AssignedTo, ticket.AssignedTo).Set(t => t.Priority, ticket.Priority).Set(t => t.Deadline, ticket.Deadline);
 
             await _tickets.UpdateOneAsync(filter, update);
 
@@ -124,10 +124,10 @@ namespace IncidentManagementSystem.Repositories
             if (ticket == null)
                 return;
 
-            if (ticket.AssignedTo != null && string.IsNullOrWhiteSpace(ticket.AssignedTo.UserId))
-            {
-                ticket.AssignedTo = null;
-            }
+            //if (ticket.AssignedTo != null && string.IsNullOrWhiteSpace(ticket.AssignedTo.UserId))
+            //{
+            //    ticket.AssignedTo = null;
+            //}
 
            
             ticket.Status = status;

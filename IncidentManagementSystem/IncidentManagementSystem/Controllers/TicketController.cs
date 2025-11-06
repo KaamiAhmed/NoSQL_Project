@@ -117,7 +117,9 @@ namespace IncidentManagementSystem.Controllers
             try
             {
                 var regularEmployees = await _userService.GetUsersByRoleAsync(Role.RegularEmployee) ?? new List<User>();
-                ViewBag.RegularEmployees = regularEmployees;
+                var sortedEmployees = regularEmployees.OrderBy(emp => emp.Name.FirstName).ToList();
+
+                ViewBag.RegularEmployees = sortedEmployees;
                 ViewBag.LoggedInUser = _userService.GetLoggedInUser();
                 return View();
             }
@@ -211,6 +213,7 @@ namespace IncidentManagementSystem.Controllers
                 }
 
                 var serviceDeskEmployees = await _userService.GetUsersByRoleAsync(Role.ServiceDeskEmployee);
+                serviceDeskEmployees = serviceDeskEmployees.OrderBy(emp => emp.Name.FirstName).ThenBy(emp => emp.Name.LastName).ToList();
                 ViewBag.ServiceDeskEmployees = serviceDeskEmployees;
                 ViewData["LoggedInUser"] = _userService.GetLoggedInUser();
 
@@ -248,6 +251,19 @@ namespace IncidentManagementSystem.Controllers
                     model.AssignedTo.LastName = selectedEmp.Name.LastName;
                 }
                 // Update deadline based on priority
+                switch (model.Priority)
+                {
+                    case Priority.High:
+                        model.Deadline = 7;
+                        break;
+                    case Priority.Normal:
+                        model.Deadline = 14;
+                        break;
+                    case Priority.Low:
+                        model.Deadline = 21;
+                        break;
+                }
+
                 switch (model.Priority)
                 {
                     case Priority.High:
