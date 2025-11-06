@@ -19,7 +19,7 @@ namespace IncidentManagementSystem.Repositories
         {
             try
             {
-                return await _tickets.Find(Builders<Ticket>.Filter.Eq(t => t.ReportedBy, id)).ToListAsync();
+                return await _tickets.Find(t => t.ReportedBy == id).ToListAsync();
             }
             catch (Exception ex)
             {
