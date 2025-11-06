@@ -87,6 +87,9 @@
 								<p><b>Status:</b> <span class="badge @bgColor">@ticket.Status</span></p>
 							}
 
+							<p><b>Deadline:</b> @ticket.Deadline</p>
+                            <p><b>Priority:</b> @ticket.Priority</p>
+
 							@if(loggedInUser!=null && loggedInUser.Role== Role.ServiceDeskEmployee )
 							{
 							 <p><b>Reported By:</b> @ticket.ReportedByName</p>
