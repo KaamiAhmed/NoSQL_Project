@@ -4,11 +4,17 @@ If due to any unexpected reason, the .env file does not work, you will need to c
 Mongo_ConnectionString = mongodb+srv://KamranAhmed:Ikkomuitpakistan1046@cluster0.9bli6xt.mongodb.net/
 
 //for forget password functionality to work
+
 SMTP_HOST=smtp.gmail.com
+
 SMTP_PORT=587
+
 SMTP_EnableSsl=true
+
 SMTP_UseDefaultCredentials=false
+
 SMTP_EMAIL=kamranahmedi1272@gmail.com
+
 SMTP_PASSWORD=dfip bmmn fjrc elkp
 
 Use the connection string in Mongodb Compass to connect to the database hosted on Atlas.
