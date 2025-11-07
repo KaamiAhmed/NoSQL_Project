@@ -1,6 +1,7 @@
 If due to any unexpected reason, the .env file does not work, you will need to create a new .env file and place the following code in the file.
 
 // connection string to connect to the database
+
 Mongo_ConnectionString = mongodb+srv://KamranAhmed:Ikkomuitpakistan1046@cluster0.9bli6xt.mongodb.net/
 
 //for forget password functionality to work
