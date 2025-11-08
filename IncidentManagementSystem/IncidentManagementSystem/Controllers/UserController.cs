@@ -25,14 +25,6 @@ namespace IncidentManagementSystem.Controllers
             return View(users);
         }
 
-        //[HttpPost]
-        //public IActionResult Create(string name, string email)
-        //{
-        //    var user = new User { Name = name, Email = email };
-        //    _userService.Add(user);
-        //    return RedirectToAction("Index");
-        //}
-
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Create()
         {
@@ -63,14 +55,6 @@ namespace IncidentManagementSystem.Controllers
                 return View(user);
             }
         }
-
-        //[HttpPost]
-        //public IActionResult Create(string name, string email)
-        //{
-        //    var user = new User { Name = name, Email = email };
-        //    _userService.Add(user);
-        //    return RedirectToAction("Index");
-        //}
 
 
         [SessionAuthorize(Role.Admin)]

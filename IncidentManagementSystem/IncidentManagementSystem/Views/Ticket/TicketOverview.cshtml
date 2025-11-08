@@ -33,7 +33,14 @@
 	<div style="width:80%" class="d-flex flex-column">
 		<div class="d-flex flex-column text">
 			<div>
-				<h1 class="ms-2 mb-5 mt-1">Tickets Overview</h1>
+				@if(loggedInUser != null && loggedInUser.Role == Role.RegularEmployee)
+				{
+					<h2 class="ms-2 mb-3 mt-3">My Incidents Overview</h2>
+				}
+				else
+				{
+					<h2 class="ms-2 mb-3 mt-3">All Incidents Overview</h2>
+				}
 			</div>
 			
 			@if (totalTickets == 0)
