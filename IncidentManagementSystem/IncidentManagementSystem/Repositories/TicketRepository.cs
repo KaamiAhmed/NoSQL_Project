@@ -112,7 +112,7 @@ namespace IncidentManagementSystem.Repositories
         {
 
             var filter = Builders<Ticket>.Filter.Eq(t => t.Id, ticket.Id);
-            var update = Builders<Ticket>.Update.Set(t => t.AssignedTo, ticket.AssignedTo).Set(t => t.Priority, ticket.Priority).Set(t => t.Status, ticket.Status);
+            var update = Builders<Ticket>.Update.Set(t => t.AssignedTo, ticket.AssignedTo).Set(t => t.Priority, ticket.Priority).Set(t => t.Deadline, ticket.Deadline);
 
             await _tickets.UpdateOneAsync(filter, update);
 
@@ -124,10 +124,10 @@ namespace IncidentManagementSystem.Repositories
             if (ticket == null)
                 return;
 
-            if (ticket.AssignedTo != null && string.IsNullOrWhiteSpace(ticket.AssignedTo.UserId))
-            {
-                ticket.AssignedTo = null;
-            }
+            //if (ticket.AssignedTo != null && string.IsNullOrWhiteSpace(ticket.AssignedTo.UserId))
+            //{
+            //    ticket.AssignedTo = null;
+            //}
 
            
             ticket.Status = status;
@@ -182,5 +182,18 @@ namespace IncidentManagementSystem.Repositories
                 throw new Exception(ex.Message);
             }
         }
+        public async Task UnassignTicketsFromUserAsync(string userId) //method to unassign tickets from a user when its deleted
+        {
+            var filter = Builders<Ticket>.Filter.Eq(t => t.AssignedTo.UserId, userId);
+            var update = Builders<Ticket>.Update.Set(t => t.AssignedTo, null);
+            await _tickets.UpdateManyAsync(filter, update);
+        }
+
+        public Task<int> CountAssignedToAsync(string userId) //counts how many tickets assigned to user
+        {
+            var filter = Builders<Ticket>.Filter.Eq(t => t.AssignedTo.UserId, userId);
+            return _tickets.CountDocumentsAsync(filter).ContinueWith(t => (int)t.Result);
+        }
+
     }
 }

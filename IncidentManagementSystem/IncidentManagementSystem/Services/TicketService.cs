@@ -82,5 +82,15 @@ namespace IncidentManagementSystem.Services
         {
             return await _ticketRepository.GetAllClosedTicketsAsync(status);
         }
+        public async Task UnassignTicketsFromUserAsync(string userId)
+        {
+            await _ticketRepository.UnassignTicketsFromUserAsync(userId);
+        }
+        public async Task<int> CountAssignedToAsync(string userId)
+        {
+            return await _ticketRepository.CountAssignedToAsync(userId);
+        }
+
+
     }
 }
