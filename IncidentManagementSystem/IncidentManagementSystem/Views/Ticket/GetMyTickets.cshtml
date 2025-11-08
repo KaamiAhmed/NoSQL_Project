@@ -23,6 +23,16 @@
 				<a asp-action="CreateIncident" asp-controller="Ticket" class="btn btn-primary me-3">+ Add Incident</a>
 			}
 		</div>
+
+		<form method="get" action="/Ticket/GetMyTickets" class="d-flex align-items-center gap-3 mb-4 ms-2">
+			<div class="d-flex align-items-center gap-2 ms-3">
+				<label class="fw-semibold mb-0">Sort by Priority:</label>
+				<select name="sort" class="form-select form-select-sm" style="width:150px;" onchange="this.form.submit()">
+					<option value="priority_desc" selected="@(ViewBag.Sort == "priority_desc")">High to Low</option>
+					<option value="priority_asc" selected="@(ViewBag.Sort == "priority_asc")">Low to High</option>
+				</select>
+			</div>
+    </form>
 		<form method="get" action="/Ticket/GetMyTickets" class="d-flex mb-4 ms-2">
 			<input class="w-25 me-2" type="search" name="searchWord" placeholder="Search by Title or Description" value="@ViewData["CurrentSearch"]" />
 			<button class="btn btn-outline-success" type="submit">Search</button>
@@ -31,6 +41,9 @@
 			<input class="w-25 me-2" type="search" name="filterWord" placeholder="Filter by Title or Description" value="@ViewData["CurrentFilter"]" />
 			<button class="btn btn-outline-success" type="submit">Search</button>
 		</form>
+
+		
+
 		@if (ViewBag.NoTickets != null)
 		{
 			<div class="alert alert-info">@ViewBag.NoTickets</div>
@@ -66,6 +79,8 @@
 					<div id="@collapseId" class="accordion-collapse collapse" data-bs-parent="#accordion">
 						<div class="accordion-body">
 							<p><b>Description:</b> @ticket.Description</p>
+							<p><b>Type of Incident:</b> @ticket.TypeOfIncident</p>
+							<p><b>Priority:</b> @ticket.Priority</p>
 							@if (loggedInUser != null && loggedInUser.Role == Role.ServiceDeskEmployee)
 							{
 								if (ticket.Status == Status.Closed)
@@ -90,6 +105,7 @@
 							{
 								<p><b>Status:</b> <span class="badge @bgColor">@ticket.Status</span></p>
 							}
+							<p><b>Deadline:</b> @ticket.Deadline</p>                          							
 
 							@if(loggedInUser!=null && loggedInUser.Role== Role.ServiceDeskEmployee )
 							{

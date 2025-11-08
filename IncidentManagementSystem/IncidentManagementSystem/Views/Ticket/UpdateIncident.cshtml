@@ -46,7 +46,7 @@
                         <label asp-for="AssignedTo.UserId" class="form-label fw-semibold">Assign To</label>
                         <select asp-for="AssignedTo.UserId" class="form-select" required>
                             <option value="">-- Select Service Desk Employee --</option>
-                            @foreach (var emp in serviceDeskEmployees)
+                            @foreach (var emp in ViewBag.ServiceDeskEmployees)
                             {
                                 var fullName = emp.Name != null
                                 ? $"{emp.Name.FirstName} {emp.Name.LastName}"
@@ -58,6 +58,7 @@
                         </select>
                         <span asp-validation-for="AssignedTo.UserId" class="text-danger small"></span>
                     </div>
+
                 </div>
 
                 <div class="d-flex justify-content-end mt-3 gap-2">
