@@ -23,14 +23,8 @@
 				<a asp-action="CreateIncident" asp-controller="Ticket" class="btn btn-primary me-3">+ Add Incident</a>
 			}
 		</div>
+
 		<form method="get" action="/Ticket/GetMyTickets" class="d-flex align-items-center gap-3 mb-4 ms-2">
-			<input class="form-control form-control-sm w-auto" style="width:250px;"
-				   type="search" name="searchWord"
-				   placeholder="Search by Title or Description"
-				   value="@ViewData["CurrentFilter"]" />
-
-			<button class="btn btn-outline-success btn-sm" type="submit">Search</button>
-
 			<div class="d-flex align-items-center gap-2 ms-3">
 				<label class="fw-semibold mb-0">Sort by Priority:</label>
 				<select name="sort" class="form-select form-select-sm" style="width:150px;" onchange="this.form.submit()">
@@ -38,6 +32,14 @@
 					<option value="priority_asc" selected="@(ViewBag.Sort == "priority_asc")">Low to High</option>
 				</select>
 			</div>
+    </form>
+		<form method="get" action="/Ticket/GetMyTickets" class="d-flex mb-4 ms-2">
+			<input class="w-25 me-2" type="search" name="searchWord" placeholder="Search by Title or Description" value="@ViewData["CurrentSearch"]" />
+			<button class="btn btn-outline-success" type="submit">Search</button>
+		</form>
+		<form method="get" action="/Ticket/GetMyTickets" class="d-flex mb-4 ms-2">
+			<input class="w-25 me-2" type="search" name="filterWord" placeholder="Filter by Title or Description" value="@ViewData["CurrentFilter"]" />
+			<button class="btn btn-outline-success" type="submit">Search</button>
 		</form>
 
 		
