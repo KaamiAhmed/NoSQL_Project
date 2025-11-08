@@ -22,6 +22,10 @@ namespace IncidentManagementSystem.Services.Interfaces
         Task<long> GetAllOpenTicketsAsync(Status status);
         Task<long> GetAllResolvedTicketsAsync(Status status);
         Task<long> GetAllClosedTicketsAsync(Status status);
+        // Admin
+        Task UnassignTicketsFromUserAsync(string userId);
+        Task<int> CountAssignedToAsync(string userId);
+
 
     }
 }

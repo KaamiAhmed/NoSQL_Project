@@ -182,5 +182,18 @@ namespace IncidentManagementSystem.Repositories
                 throw new Exception(ex.Message);
             }
         }
+        public async Task UnassignTicketsFromUserAsync(string userId) //method to unassign tickets from a user when its deleted
+        {
+            var filter = Builders<Ticket>.Filter.Eq(t => t.AssignedTo.UserId, userId);
+            var update = Builders<Ticket>.Update.Set(t => t.AssignedTo, null);
+            await _tickets.UpdateManyAsync(filter, update);
+        }
+
+        public Task<int> CountAssignedToAsync(string userId) //counts how many tickets assigned to user
+        {
+            var filter = Builders<Ticket>.Filter.Eq(t => t.AssignedTo.UserId, userId);
+            return _tickets.CountDocumentsAsync(filter).ContinueWith(t => (int)t.Result);
+        }
+
     }
 }
