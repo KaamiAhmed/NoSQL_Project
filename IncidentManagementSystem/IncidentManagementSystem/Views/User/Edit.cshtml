@@ -4,65 +4,84 @@
     ViewData["Title"] = "Edit User";
 }
 
-<h2>Edit User</h2>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" name="Id" value="@Model.Id" />
+            <h2 class="mb-4 text-center">@ViewData["Title"]</h2>
 
-    <div>
-        <label>UserName</label>
-        <input name="UserName" value="@Model.UserName" />
-    </div>
 
-    <div>
-        <label>First Name</label>
-        <input name="Name.FirstName" value="@Model.Name?.FirstName" />
-    </div>
-
-    <div>
-        <label>Last Name</label>
-        <input name="Name.LastName" value="@Model.Name?.LastName" />
-    </div>
-
-    <div>
-        <label>Email</label>
-        <input name="Email" type="email" value="@Model.Email" />
-    </div>
-
-    <div>
-        <label>Role</label>
-        <select name="Role">
-            @foreach (Role r in Enum.GetValues(typeof(Role)))
+            @if (ViewBag.Error != null)
             {
-                if (r == Model.Role)
-                {
-                    <option value="@r" selected>@r</option>
-                }
-                else
-                {
-                    <option value="@r">@r</option>
-                }
+                <div class="alert alert-danger">@ViewBag.Error</div>
             }
-        </select>
-    </div>
 
-    <div>
-        <label>Branch</label>
-        <select name="Branch">
-            @foreach (Branch b in Enum.GetValues(typeof(Branch)))
-            {
-                if (b == Model.Branch)
-                {
-                    <option value="@b" selected>@b</option>
-                }
-                else
-                {
-                    <option value="@b">@b</option>
-                }
-            }
-        </select>
-    </div>
+            <form asp-action="Edit" method="post" class="border rounded p-4 shadow-sm bg-light">
+                <input type="hidden" name="Id" value="@Model.Id" />
 
-    <button type="submit">Save</button>
-    <a asp-action="Index">Cancel</a>
-</form>
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input name="UserName" class="form-control" placeholder="Enter username" value="@Model.UserName" required />
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">First Name</label>
+                        <input name="Name.FirstName" class="form-control" placeholder="Enter first name" value="@Model.Name?.FirstName" required />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Last Name</label>
+                        <input name="Name.LastName" class="form-control" placeholder="Enter last name" value="@Model.Name?.LastName" required />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input name="Email" type="email" class="form-control" placeholder="Enter email" value="@Model.Email" required />
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Role</label>
+                        <select name="Role" class="form-select" required>
+                            @foreach (Role r in Enum.GetValues(typeof(Role)))
+                            {
+                                if (r == Model.Role)
+                                {
+                                    <option value="@r" selected>@r</option>
+                                }
+                                else
+                                {
+                                    <option value="@r">@r</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Branch</label>
+                        <select name="Branch" class="form-select" required>
+                            @foreach (Branch b in Enum.GetValues(typeof(Branch)))
+                            {
+                                if (b == Model.Branch)
+                                {
+                                    <option value="@b" selected>@b</option>
+                                }
+                                else
+                                {
+                                    <option value="@b">@b</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>

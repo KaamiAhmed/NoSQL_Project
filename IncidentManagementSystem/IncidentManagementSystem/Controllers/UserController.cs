@@ -1,5 +1,6 @@
 ﻿using IncidentManagementSystem.Commons;
 using IncidentManagementSystem.Models;
+using IncidentManagementSystem.Services;
 using IncidentManagementSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
@@ -9,10 +10,11 @@ namespace IncidentManagementSystem.Controllers
     public class UserController : Controller
     {
         private readonly IUserService _userService;
-
-        public UserController(IUserService userService)
+        private readonly ITicketService _ticketService;
+        public UserController(IUserService userService, ITicketService ticketService)
         {
             _userService = userService;
+            _ticketService = ticketService;
         }
 
         [SessionAuthorize(Role.Admin)]
@@ -25,11 +27,27 @@ namespace IncidentManagementSystem.Controllers
             return View(users);
         }
 
+        //[HttpPost]
+        //public IActionResult Create(string name, string email)
+        //{
+        //    var user = new User { Name = name, Email = email };
+        //    _userService.Add(user);
+        //    return RedirectToAction("Index");
+        //}
+
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Create()
         {
-            ViewBag.Branches = await _userService.GetDistinctBranchesAsync();
-            return View(new User { Name = new Name() }); // ensure nested binding works
+            try
+            {
+                ViewBag.Branches = await _userService.GetDistinctBranchesAsync();
+                return View(new User { Name = new Name() }); // ensure nested binding works
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Error while preparing create page: " + ex.Message;
+                return View(new User { Name = new Name() });
+            }
         }
 
         [HttpPost]
@@ -44,53 +62,89 @@ namespace IncidentManagementSystem.Controllers
 
             try
             {
-                await _userService.AddUserAsync(user); 
+                await _userService.AddUserAsync(user);
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-              
                 ViewBag.Error = ex.Message;
                 ViewBag.Branches = await _userService.GetDistinctBranchesAsync();
                 return View(user);
             }
         }
 
-
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Edit(string id)
         {
-            var user = await _userService.GetByIdAsync(id);
+            try
+            {
+                var user = await _userService.GetByIdAsync(id);
 
-            if (user == null) return RedirectToAction("Index");
+                if (user == null) return RedirectToAction("Index");
 
-            if (user.Name == null) user.Name = new Name();
-            return View(user);
+                if (user.Name == null) user.Name = new Name();
+                return View(user);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Error while loading edit page: " + ex.Message;
+                return RedirectToAction("Index");
+            }
         }
 
         [HttpPost]
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Edit(string id, User updatedUser)
         {
-            await _userService.UpdateUserAsync(id, updatedUser);
-            return RedirectToAction("Index");
+            try
+            {
+                await _userService.UpdateUserAsync(id, updatedUser);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = ex.Message;
+
+                ViewBag.Branches = await _userService.GetDistinctBranchesAsync();
+                updatedUser.Name ??= new Name();
+                return View(updatedUser);
+            }
         }
 
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Delete(string id)
         {
-            var user = await _userService.GetByIdAsync(id);
-            if (user == null) return RedirectToAction("Index");
-            return View(user);
+            try
+            {
+                var user = await _userService.GetByIdAsync(id);
+                if (user == null)
+                    return RedirectToAction("Index");
+
+                ViewBag.AssignedCount = await _ticketService.CountAssignedToAsync(id);
+                return View(user);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Error while loading delete page: " + ex.Message;
+                return RedirectToAction("Index");
+            }
         }
 
         [HttpPost]
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            await _userService.DeleteUserAsync(id);
-            return RedirectToAction("Index");
+            try
+            {
+                await _userService.DeleteUserAsync(id);
+                TempData["Success"] = "User deleted successfully. All assigned tickets were unassigned.";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Error while deleting user: " + ex.Message;
+                return RedirectToAction("Index");
+            }
         }
-
     }
 }
