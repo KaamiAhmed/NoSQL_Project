@@ -80,9 +80,7 @@
                                 var fullName = emp.Name != null
                                 ? $"{emp.Name.FirstName} {emp.Name.LastName}"
                                 : emp.UserName;
-                                <option value="@emp.Id">
-                                    @fullName
-                                </option>
+                                <option value="@emp.Id">@fullName</option>
                             }
                         </select>
                         <span asp-validation-for="AssignedTo.UserId" class="text-danger small"></span>
