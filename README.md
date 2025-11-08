@@ -21,25 +21,28 @@ SMTP_PASSWORD=dfip bmmn fjrc elkp
 Use the connection string in Mongodb Compass to connect to the database hosted on Atlas.
 
 To login, All the Usernames and Roles can be found in the database, and all the passwords are 1234 except one username that is:
-Username: NishchalBhujel
-Password: 5678
+
+Username: NishchalBhujel,
+Password: 5678,
 Role: Service desk employee
 
-For testing services here are some useful users:
-Username: KamranAhmed
-Password: 1234
+
+For testing purposes here are some useful users:
+
+Username: KamranAhmed,
+Password: 1234,
 Role: Regular employee
 
-Username: EhtishamAhmad
-Password: 1234
+Username: EhtishamAhmad,
+Password: 1234,
 Role: Service desk employee
 
-Username: MahmoudHashish
-Password: 1234
+Username: MahmoudHashish,
+Password: 1234,
 Role: Admin
 
-Username: SophiaMartinez12
-Password: 1234
+Username: SophiaMartinez12,
+Password: 1234,
 Role: Regular employee
 
 Regular employee can see his/her own incidents and can create new incidents.
