@@ -46,36 +46,53 @@ namespace IncidentManagementSystem.Controllers
         }
 
         [SessionAuthorize(Role.RegularEmployee, Role.ServiceDeskEmployee, Role.Admin)]
-        public async Task<IActionResult> GetMyTickets(string searchWord)
+        public async Task<IActionResult> GetMyTickets(string searchWord, string filterWord, string sort = "priority_desc")
         {
-            User? loggedInUser = _userService.GetLoggedInUser();
-            List<Ticket> myTickets = new List<Ticket>();
-            if (loggedInUser != null)
-            {
-                if (loggedInUser.Role == Role.RegularEmployee)
-                {
-                    myTickets = await _ticketService.GetTicketsByUserAsync(loggedInUser.Id);
-                }
-                else
-                {
-                    myTickets = await _ticketService.GetAllIncidentsAsync();
-                }
+            var loggedInUser = _userService.GetLoggedInUser();
+            if (loggedInUser == null) return View(new List<Ticket>());
 
-                if (myTickets == null || myTickets.Count == 0)
-                {
-                    ViewBag.NoTickets = "There are no incidents reported.";
-                }
+            List<Ticket> myTickets;
+
+            if (loggedInUser.Role == Role.RegularEmployee)
+                myTickets = await _ticketService.GetTicketsByUserAsync(loggedInUser.Id);
+            else
+                myTickets = await _ticketService.GetAllIncidentsAsync();
+
+            if (!string.IsNullOrWhiteSpace(searchWord))
+                myTickets = await _searchIncidentService.SearchIncidentsAsync(searchWord);
+
+           
+            myTickets = sort switch
+            {
+                "priority_asc" => myTickets.OrderBy(t => t.Priority == Priority.Low ? 1 : t.Priority == Priority.Normal ? 2 : 3).ToList(), 
+                "priority_desc" => myTickets.OrderByDescending(t => t.Priority == Priority.High ? 3 : t.Priority == Priority.Normal ? 2 : 1).ToList(), _=> myTickets
+            };
+
+            if (myTickets.Count == 0)
+                ViewBag.NoTickets = "There are no incidents reported.";
+
+            ViewData["LoggedInUser"] = loggedInUser;
+            ViewData["CurrentFilter"] = searchWord;
+            ViewBag.UserRole = loggedInUser.Role.ToString();
+            ViewBag.Sort = sort;
 
                 if (searchWord != null)
                 {
                     myTickets = await _searchIncidentService.SearchIncidentsAsync(searchWord);
                 }
+                if (filterWord != null)
+                {
+                    myTickets = myTickets.Where(t => t.Title.Contains(filterWord, StringComparison.OrdinalIgnoreCase)||t.Description.Contains(filterWord, StringComparison.OrdinalIgnoreCase)).ToList();
+                }
                 ViewData["LoggedInUser"] = loggedInUser;
-                ViewData["CurrentFilter"] = searchWord;
+                ViewData["CurrentSearch"] = searchWord;
+                ViewData["CurrentFilter"] = filterWord;
                 ViewBag.UserRole = loggedInUser.Role.ToString();
             }
+            
             return View(myTickets);
         }
+
 
 
 
@@ -112,7 +129,13 @@ namespace IncidentManagementSystem.Controllers
             try
             {
                 var regularEmployees = await _userService.GetUsersByRoleAsync(Role.RegularEmployee) ?? new List<User>();
-                ViewBag.RegularEmployees = regularEmployees;
+                var sortedEmployees = regularEmployees.OrderBy(emp => emp.Name.FirstName).ToList();
+                ViewBag.RegularEmployees = sortedEmployees;
+
+                var serviceDeskEmployees = await _userService.GetUsersByRoleAsync(Role.ServiceDeskEmployee);
+                serviceDeskEmployees = serviceDeskEmployees.OrderBy(emp => emp.Name.FirstName).ThenBy(emp => emp.Name.LastName).ToList();
+                ViewBag.ServiceDeskEmployees = serviceDeskEmployees;
+
                 ViewBag.LoggedInUser = _userService.GetLoggedInUser();
                 return View();
             }
@@ -169,6 +192,11 @@ namespace IncidentManagementSystem.Controllers
                         break;
                 }
 
+                if (string.IsNullOrEmpty(model.AssignedTo?.UserId))
+                {
+                    model.AssignedTo = null;
+                }
+
                 await _ticketService.AddIncidentAsync(model);
 
                 TempData["SuccessMessage"] = "Incident created successfully!";
@@ -206,6 +234,7 @@ namespace IncidentManagementSystem.Controllers
                 }
 
                 var serviceDeskEmployees = await _userService.GetUsersByRoleAsync(Role.ServiceDeskEmployee);
+                serviceDeskEmployees = serviceDeskEmployees.OrderBy(emp => emp.Name.FirstName).ThenBy(emp => emp.Name.LastName).ToList();
                 ViewBag.ServiceDeskEmployees = serviceDeskEmployees;
                 ViewData["LoggedInUser"] = _userService.GetLoggedInUser();
 
@@ -243,6 +272,19 @@ namespace IncidentManagementSystem.Controllers
                     model.AssignedTo.LastName = selectedEmp.Name.LastName;
                 }
                 // Update deadline based on priority
+                switch (model.Priority)
+                {
+                    case Priority.High:
+                        model.Deadline = 7;
+                        break;
+                    case Priority.Normal:
+                        model.Deadline = 14;
+                        break;
+                    case Priority.Low:
+                        model.Deadline = 21;
+                        break;
+                }
+
                 switch (model.Priority)
                 {
                     case Priority.High:

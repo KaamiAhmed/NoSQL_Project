@@ -9,6 +9,7 @@ namespace IncidentManagementSystem.Repositories.Interfaces
 
         Task<List<User>> GetAllUsersAsync();
         Task<User> UserNameExistsAsync(string userName);
+        Task<User> EmailExistsAsync(string userName);
         Task AddUserAsync(User user);
         Task UpdateUserAsync(string id, User updatedUser);
         Task DeleteUserAsync(string id);
