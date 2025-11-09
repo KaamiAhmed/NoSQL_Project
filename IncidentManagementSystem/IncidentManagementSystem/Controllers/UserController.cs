@@ -27,17 +27,11 @@ namespace IncidentManagementSystem.Controllers
             return View(users);
         }
 
-        //[HttpPost]
-        //public IActionResult Create(string name, string email)
-        //{
-        //    var user = new User { Name = name, Email = email };
-        //    _userService.Add(user);
-        //    return RedirectToAction("Index");
-        //}
-
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Create()
         {
+            User? loggedInUser = _userService.GetLoggedInUser();
+            ViewData["LoggedInUser"] = loggedInUser;
             try
             {
                 ViewBag.Branches = await _userService.GetDistinctBranchesAsync();
@@ -54,6 +48,8 @@ namespace IncidentManagementSystem.Controllers
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Create(User user)
         {
+            User? loggedInUser = _userService.GetLoggedInUser();
+            ViewData["LoggedInUser"] = loggedInUser;
             if (!ModelState.IsValid)
             {
                 ViewBag.Branches = await _userService.GetDistinctBranchesAsync();
@@ -76,6 +72,8 @@ namespace IncidentManagementSystem.Controllers
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Edit(string id)
         {
+            User? loggedInUser = _userService.GetLoggedInUser();
+            ViewData["LoggedInUser"] = loggedInUser;
             try
             {
                 var user = await _userService.GetByIdAsync(id);
@@ -114,6 +112,8 @@ namespace IncidentManagementSystem.Controllers
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Delete(string id)
         {
+            User? loggedInUser = _userService.GetLoggedInUser();
+            ViewData["LoggedInUser"] = loggedInUser;
             try
             {
                 var user = await _userService.GetByIdAsync(id);
