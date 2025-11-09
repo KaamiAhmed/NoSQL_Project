@@ -29,7 +29,7 @@
 		@Html.AntiForgeryToken()
 		<input type="hidden" name="id" value="@Model.Id" />
 
-		@if (@Model.Role == Role.ServiceDeskEmployee && assignedCount > 0)
+		@if (@Model.Role == Role.ServiceDeskEmployee & assignedCount > 0)
 		{
 			<div class="form-check mb-3">
 				<input class="form-check-input" type="checkbox" id="ack" />
@@ -48,10 +48,28 @@
 
 @section Scripts {
     <script>
-        const ack = document.getElementById('ack');
+        // const ack = document.getElementById('ack');
         const btn = document.getElementById('deleteBtn');
         const form = document.getElementById('deleteForm');
-        ack.addEventListener('change', () => btn.disabled = !ack.checked);
+        // ack.addEventListener('change', () => btn.disabled = !ack.checked);
+
+		// Only for ServiceDeskEmployee
+		@if (Model.Role == Role.ServiceDeskEmployee && assignedCount > 0)
+		{
+				<text>
+					const ack = document.getElementById('ack');
+					ack.addEventListener('change', () => {
+						btn.disabled = !ack.checked;
+					});
+				</text>
+		}
+		else
+		{
+				<text>
+					// For other roles, enable the delete button immediately
+					btn.disabled = false;
+				</text>
+		}
 
         form.addEventListener('submit', (e) => {
           const count = @assignedCount;
