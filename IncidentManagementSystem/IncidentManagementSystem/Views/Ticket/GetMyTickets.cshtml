@@ -32,14 +32,14 @@
 					<option value="priority_asc" selected="@(ViewBag.Sort == "priority_asc")">Low to High</option>
 				</select>
 			</div>
-    </form>
+		</form>
 		<form method="get" action="/Ticket/GetMyTickets" class="d-flex mb-4 ms-2">
 			<input class="w-25 me-2" type="search" name="searchWord" placeholder="Search by Title or Description" value="@ViewData["CurrentSearch"]" />
 			<button class="btn btn-outline-success" type="submit">Search</button>
 		</form>
 		<form method="get" action="/Ticket/GetMyTickets" class="d-flex mb-4 ms-2">
 			<input class="w-25 me-2" type="search" name="filterWord" placeholder="Filter by Title or Description" value="@ViewData["CurrentFilter"]" />
-			<button class="btn btn-outline-success" type="submit">Search</button>
+			<button class="btn btn-outline-success" type="submit">Filter</button>
 		</form>
 
 		
@@ -80,7 +80,7 @@
 						<div class="accordion-body">
 							<p><b>Description:</b> @ticket.Description</p>
 							<p><b>Type of Incident:</b> @ticket.TypeOfIncident</p>
-							<p><b>Priority:</b> @ticket.Priority</p>
+							<p><b>Priority:</b> @(ticket.Priority != null ? ticket.Priority : "Not set yet")</p>
 							@if (loggedInUser != null && loggedInUser.Role == Role.ServiceDeskEmployee)
 							{
 								if (ticket.Status == Status.Closed)
@@ -105,25 +105,26 @@
 							{
 								<p><b>Status:</b> <span class="badge @bgColor">@ticket.Status</span></p>
 							}
-							<p><b>Deadline:</b> @ticket.Deadline</p>                          							
+							<p><b>Deadline:</b> @(ticket.Deadline != null ? ticket.Deadline : "Not set yet")</p>                          							
 
-							@if(loggedInUser!=null && loggedInUser.Role== Role.ServiceDeskEmployee )
+							@if (loggedInUser != null && loggedInUser.Role != Role.RegularEmployee)
 							{
-							 <p><b>Reported By:</b> @ticket.ReportedByName</p>
-								<p>
-									<b>Assigned To:</b> @(ticket.AssignedTo != null && !string.IsNullOrWhiteSpace(ticket.AssignedTo.FirstName)
-																? $"{ticket.AssignedTo.FirstName} {ticket.AssignedTo.LastName}"
-																: "Not Assigned")
-						        </p>
-							}							
+								<p><b>Reported By:</b> @ticket.ReportedByName</p>
+							}
+							<p>
+								<b>Assigned To:</b> @(ticket.AssignedTo != null && !string.IsNullOrWhiteSpace(ticket.AssignedTo.FirstName)
+															? $"{ticket.AssignedTo.FirstName} {ticket.AssignedTo.LastName}"
+															: "Not Assigned yet")
+							</p>
+
 							<small class="text-muted">@ticket.DateOfEvent</small>
-							@if (loggedInUser != null && loggedInUser.Role == Role.ServiceDeskEmployee)
+						@if (loggedInUser != null && loggedInUser.Role == Role.ServiceDeskEmployee)
 							{
 								<div class="mt-2 text-end">
-								@if (ticket.Status == Status.Closed)
-								{									
-									<button class="btn btn-sm btn-outline-secondary opacity-50" disabled>
-										<i class="bi bi-pencil-square"></i> Update
+									@if (ticket.Status == Status.Closed)
+									{
+										<button class="btn btn-sm btn-outline-secondary opacity-50" disabled>
+											<i class="bi bi-pencil-square"></i> Update
 										</button>
 									}
 									else
@@ -132,7 +133,7 @@
 											<i class="bi bi-pencil-square"></i> Update
 										</a>
 									}
-									
+
 								</div>
 							}
 						</div>
@@ -152,7 +153,7 @@
 				var newStatus = $(this).val();
 				var dropdown = $(this);
 
-				
+
 				dropdown.removeClass('bg-info bg-success bg-danger');
 
 				if (newStatus === 'Open') dropdown.addClass('bg-info');
@@ -160,7 +161,7 @@
 				else dropdown.addClass('bg-danger');
 
 
-				
+
 				$.ajax({
 					url: '/Ticket/UpdateStatus',
 					type: 'POST',

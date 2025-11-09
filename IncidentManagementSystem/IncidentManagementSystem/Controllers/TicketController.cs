@@ -48,7 +48,7 @@ namespace IncidentManagementSystem.Controllers
         [SessionAuthorize(Role.RegularEmployee, Role.ServiceDeskEmployee, Role.Admin)]
         public async Task<IActionResult> GetMyTickets(string searchWord, string filterWord, string sort = "priority_desc")
         {
-            var loggedInUser = _userService.GetLoggedInUser();
+            User? loggedInUser = _userService.GetLoggedInUser();
             if (loggedInUser == null) return View(new List<Ticket>());
 
             List<Ticket> myTickets;
@@ -61,20 +61,17 @@ namespace IncidentManagementSystem.Controllers
             if (!string.IsNullOrWhiteSpace(searchWord))
                 myTickets = await _searchIncidentService.SearchIncidentsAsync(searchWord);
 
-           
+
             myTickets = sort switch
             {
-                "priority_asc" => myTickets.OrderBy(t => t.Priority == Priority.Low ? 1 : t.Priority == Priority.Normal ? 2 : 3).ToList(), 
-                "priority_desc" => myTickets.OrderByDescending(t => t.Priority == Priority.High ? 3 : t.Priority == Priority.Normal ? 2 : 1).ToList(), _=> myTickets
+                "priority_asc" => myTickets.OrderBy(t => t.Priority == Priority.Low ? 1 : t.Priority == Priority.Normal ? 2 : 3).ToList(),
+                "priority_desc" => myTickets.OrderByDescending(t => t.Priority == Priority.High ? 3 : t.Priority == Priority.Normal ? 2 : 1).ToList(),
+                _ => myTickets
             };
 
             if (myTickets.Count == 0)
                 ViewBag.NoTickets = "There are no incidents reported.";
 
-            ViewData["LoggedInUser"] = loggedInUser;
-            ViewData["CurrentFilter"] = searchWord;
-            ViewBag.UserRole = loggedInUser.Role.ToString();
-            ViewBag.Sort = sort;
 
                 if (searchWord != null)
                 {
@@ -92,9 +89,6 @@ namespace IncidentManagementSystem.Controllers
             
             return View(myTickets);
         }
-
-
-
 
         [SessionAuthorize(Role.ServiceDeskEmployee)]
         public async Task<IActionResult> GetAllIncidents()
@@ -272,19 +266,6 @@ namespace IncidentManagementSystem.Controllers
                     model.AssignedTo.LastName = selectedEmp.Name.LastName;
                 }
                 // Update deadline based on priority
-                switch (model.Priority)
-                {
-                    case Priority.High:
-                        model.Deadline = 7;
-                        break;
-                    case Priority.Normal:
-                        model.Deadline = 14;
-                        break;
-                    case Priority.Low:
-                        model.Deadline = 21;
-                        break;
-                }
-
                 switch (model.Priority)
                 {
                     case Priority.High:
