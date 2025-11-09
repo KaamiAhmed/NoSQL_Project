@@ -73,20 +73,20 @@ namespace IncidentManagementSystem.Controllers
                 ViewBag.NoTickets = "There are no incidents reported.";
 
 
-            if (searchWord != null)
-            {
-                myTickets = await _searchIncidentService.SearchIncidentsAsync(searchWord);
+                if (searchWord != null)
+                {
+                    myTickets = await _searchIncidentService.SearchIncidentsAsync(searchWord);
+                }
+                if (filterWord != null)
+                {
+                    myTickets = myTickets.Where(t => t.Title.Contains(filterWord, StringComparison.OrdinalIgnoreCase)||t.Description.Contains(filterWord, StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+                ViewData["LoggedInUser"] = loggedInUser;
+                ViewData["CurrentSearch"] = searchWord;
+                ViewData["CurrentFilter"] = filterWord;
+                ViewBag.UserRole = loggedInUser.Role.ToString();
             }
-            if (filterWord != null)
-            {
-                myTickets = myTickets.Where(t => t.Title.Contains(filterWord, StringComparison.OrdinalIgnoreCase) || t.Description.Contains(filterWord, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
-            ViewData["LoggedInUser"] = loggedInUser;
-            ViewData["CurrentSearch"] = searchWord;
-            ViewData["CurrentFilter"] = filterWord;
-            ViewBag.UserRole = loggedInUser.Role.ToString();
-            ViewBag.Sort = sort;
-
+            
             return View(myTickets);
         }
 
