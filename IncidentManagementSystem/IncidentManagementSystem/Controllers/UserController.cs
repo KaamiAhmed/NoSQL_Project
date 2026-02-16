@@ -20,24 +20,18 @@ namespace IncidentManagementSystem.Controllers
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Index()
         {
-            try
-            {
-                User? loggedInUser = _userService.GetLoggedInUser();
-                ViewData["LoggedInUser"] = loggedInUser;
 
-                var users = await _userService.GetAllUsersAsync();
-                return View(users);
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Error = "Error while loading users: " + ex.Message;
-                return View(new List<User>());
-            }
+            User? loggedInUser = _userService.GetLoggedInUser();
+            ViewData["LoggedInUser"] = loggedInUser;
+            var users = await _userService.GetAllUsersAsync();
+            return View(users);
         }
 
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Create()
         {
+            User? loggedInUser = _userService.GetLoggedInUser();
+            ViewData["LoggedInUser"] = loggedInUser;
             try
             {
                 ViewBag.Branches = await _userService.GetDistinctBranchesAsync();
@@ -54,6 +48,8 @@ namespace IncidentManagementSystem.Controllers
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Create(User user)
         {
+            User? loggedInUser = _userService.GetLoggedInUser();
+            ViewData["LoggedInUser"] = loggedInUser;
             if (!ModelState.IsValid)
             {
                 ViewBag.Branches = await _userService.GetDistinctBranchesAsync();
@@ -76,6 +72,8 @@ namespace IncidentManagementSystem.Controllers
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Edit(string id)
         {
+            User? loggedInUser = _userService.GetLoggedInUser();
+            ViewData["LoggedInUser"] = loggedInUser;
             try
             {
                 var user = await _userService.GetByIdAsync(id);
@@ -114,6 +112,8 @@ namespace IncidentManagementSystem.Controllers
         [SessionAuthorize(Role.Admin)]
         public async Task<IActionResult> Delete(string id)
         {
+            User? loggedInUser = _userService.GetLoggedInUser();
+            ViewData["LoggedInUser"] = loggedInUser;
             try
             {
                 var user = await _userService.GetByIdAsync(id);
